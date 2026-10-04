@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>心理学文献探索器 · 检索 · 分类 · 选题</title>
+<meta name="description" content="输入一个心理学研究问题或专业名词，自动定位相关文献、按研究方向归类，并找出该领域还可以研究的问题。">
+<meta name="theme-color" content="#4f5bd5">
+<meta property="og:type" content="website">
+<meta property="og:title" content="心理学文献探索器 · 检索 · 分类 · 选题">
+<meta property="og:description" content="输入心理学研究问题或专业名词，自动定位文献、按研究方向归类，并找出该领域还能研究什么。">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f5bd5'/%3E%3Ctext x='32' y='45' font-size='40' font-family='Georgia,serif' fill='white' text-anchor='middle'%3E%CE%A8%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f5bd5'/%3E%3Ctext x='32' y='45' font-size='40' font-family='Georgia,serif' fill='white' text-anchor='middle'%3E%CE%A8%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f4f6fb;
+  --panel:#ffffff;
+  --ink:#161a2e;
+  --ink-2:#4a5170;
+  --ink-3:#7d84a3;
+  --line:#e3e7f2;
+  --line-2:#eef1f8;
+  --accent:#4f5bd5;
+  --accent-2:#7c5cff;
+  --teal:#0f9d8f;
+  --amber:#d98b09;
+  --rose:#d6455e;
+  --shadow:0 1px 2px rgba(22,26,46,.05), 0 10px 30px rgba(22,26,46,.06);
+  --shadow-lg:0 8px 40px rgba(22,26,46,.14);
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(900px 400px at 12% -8%, #e7e9ff 0%, rgba(231,233,255,0) 60%),
+    radial-gradient(700px 360px at 92% -12%, #dcf5f1 0%, rgba(220,245,241,0) 62%),
+    var(--bg);
+  color:var(--ink);
+  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Source Han Sans SC","Noto Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+a{color:inherit;text-decoration:none}
+button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+.hidden{display:none !important}
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.topbar .wrap{display:flex;align-items:center;gap:16px;height:66px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{
+  width:38px;height:38px;flex:0 0 38px;border-radius:11px;
+  background:linear-gradient(140deg,var(--accent),var(--accent-2) 60%,var(--teal));
+  color:#fff;display:grid;place-items:center;font-size:21px;font-weight:600;
+  box-shadow:0 6px 16px rgba(79,91,213,.32);
+}
+.brand h1{margin:0;font-size:16.5px;font-weight:650;letter-spacing:.2px;white-space:nowrap}
+.brand p{margin:0;font-size:12px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .spacer{flex:1}
+.conn{
+  font-size:12px;color:var(--ink-2);background:#f1f3fa;border:1px solid var(--line);
+  padding:5px 11px;border-radius:99px;white-space:nowrap;
+}
+.conn.ok{color:#0b6b61;background:#e7f7f4;border-color:#c7ece6}
+.conn.bad{color:#9b2136;background:#fdeef1;border-color:#f7d4db}
+.conn.load{color:#8a5a05;background:#fdf5e4;border-color:#f6e4bf}
+.dot{display:inline-block;width:7px;height:7px;border-radius:99px;background:currentColor;margin-right:5px;vertical-align:1px}
+
+/* ---------- search ---------- */
+main{padding:24px 0 70px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.searchcard{padding:20px}
+.searchrow{display:flex;gap:10px}
+#q{
+  flex:1;min-width:0;padding:14px 16px;border-radius:12px;border:1.5px solid var(--line);
+  background:#fbfcff;outline:none;transition:.18s;font-size:15.5px;
+}
+#q:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px rgba(79,91,213,.12)}
+.btn{
+  border:none;border-radius:12px;padding:14px 24px;font-weight:600;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;
+  box-shadow:0 6px 18px rgba(79,91,213,.3);transition:.18s;white-space:nowrap;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(79,91,213,.36)}
+.btn:active{transform:translateY(0)}
+.btn[disabled]{opacity:.6;cursor:progress;transform:none}
+.btn.ghost{background:#fff;color:var(--ink-2);border:1px solid var(--line);box-shadow:none;font-weight:500}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn.mini{padding:6px 12px;border-radius:9px;font-size:12.5px;font-weight:500}
+.advrow{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:14px;font-size:13px;color:var(--ink-2)}
+.advrow label{display:flex;align-items:center;gap:6px}
+.advrow input[type=number]{width:74px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:#fbfcff;outline:none}
+.advrow input[type=number]:focus{border-color:var(--accent)}
+.advrow input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px}
+.advrow select{padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:#fbfcff;outline:none}
+.examples{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+.examples .lab{font-size:12.5px;color:var(--ink-3)}
+.chip{
+  border:1px solid var(--line);background:#fbfcff;border-radius:99px;padding:5px 13px;
+  font-size:12.5px;color:var(--ink-2);cursor:pointer;transition:.15s;
+}
+.chip:hover{border-color:var(--accent);color:var(--accent);background:#f4f5ff}
+
+/* ---------- status ---------- */
+.status{
+  margin-top:16px;padding:14px 16px;border-radius:12px;font-size:13.5px;
+  background:#fffaf0;border:1px solid #f3e3c4;color:#7d5305;
+}
+.status.err{background:#fdf0f3;border-color:#f6d5dd;color:#94243a}
+.status.ok{background:#eef8f6;border-color:#cdeadf;color:#0d6157}
+.status b{font-weight:650}
+.loader{display:inline-flex;gap:4px;vertical-align:middle;margin-right:8px}
+.loader i{width:6px;height:6px;border-radius:99px;background:var(--amber);animation:bounce 1s infinite}
+.loader i:nth-child(2){animation-delay:.15s}
+.loader i:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.45}30%{transform:translateY(-5px);opacity:1}}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;gap:6px;margin:22px 0 16px;flex-wrap:wrap;background:#eceff8;border:1px solid var(--line);padding:5px;border-radius:13px;width:fit-content;max-width:100%}
+.tab{
+  border:none;background:transparent;padding:8px 16px;border-radius:9px;cursor:pointer;
+  font-size:13.5px;color:var(--ink-2);font-weight:500;transition:.15s;white-space:nowrap;
+}
+.tab:hover{color:var(--accent)}
+.tab.active{background:#fff;color:var(--accent);box-shadow:0 1px 4px rgba(22,26,46,.1);font-weight:650}
+.tab .n{font-size:11px;opacity:.7;margin-left:4px}
+
+/* ---------- generic ---------- */
+.sect{margin-bottom:18px}
+.sect-h{display:flex;align-items:baseline;gap:10px;margin:0 0 12px}
+.sect-h h2{margin:0;font-size:17px;font-weight:650}
+.sect-h .desc{font-size:12.5px;color:var(--ink-3)}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.kpi{padding:16px 18px}
+.kpi .v{font-size:26px;font-weight:700;letter-spacing:-.5px;line-height:1.2}
+.kpi .k{font-size:12.5px;color:var(--ink-3);margin-top:2px}
+.kpi .sub{font-size:11.5px;color:var(--ink-3);margin-top:6px}
+.pill{display:inline-block;font-size:11.5px;padding:2px 9px;border-radius:99px;background:#f1f3fa;color:var(--ink-2);border:1px solid var(--line);white-space:nowrap}
+.pill.p-accent{background:#f0f1ff;color:#3b45b8;border-color:#dfe1fb}
+.pill.p-teal{background:#e9f7f5;color:#0b6b61;border-color:#cdeadf}
+.pill.p-amber{background:#fdf5e4;color:#8a5a05;border-color:#f6e4bf}
+.pill.p-rose{background:#fdeef1;color:#9b2136;border-color:#f7d4db}
+.pill.p-gray{background:#f3f4f8;color:#6b7290;border-color:#e8eaf2}
+.muted{color:var(--ink-3)}
+.small{font-size:12.5px}
+.note{font-size:12.5px;color:var(--ink-3);background:#fafbfe;border:1px dashed var(--line);border-radius:11px;padding:12px 14px}
+.note b{color:var(--ink-2)}
+
+/* ---------- work list ---------- */
+.work{padding:16px 18px;margin-bottom:11px;transition:.16s}
+.work:hover{border-color:#cfd5ec;box-shadow:0 4px 20px rgba(22,26,46,.09)}
+.work .t{font-size:15.5px;font-weight:600;line-height:1.45;margin:0 0 6px}
+.work .t a:hover{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(79,91,213,.4);text-underline-offset:2px}
+.work .meta{font-size:12.5px;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
+.work .meta .au{color:var(--ink-2)}
+.work .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.work .ab{margin-top:10px;font-size:13px;color:var(--ink-2);background:#fafbfe;border-left:3px solid #e2e6f5;padding:9px 12px;border-radius:0 9px 9px 0}
+.work .ab.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.work .acts{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px;align-items:center}
+.lnk{font-size:12px;padding:4px 10px;border-radius:8px;border:1px solid var(--line);color:var(--ink-2);background:#fff;transition:.15s}
+.lnk:hover{border-color:var(--accent);color:var(--accent);background:#f7f8ff}
+.lnk.lnkd{background:#f0f1ff;border-color:#dfe1fb;color:#3b45b8}
+.lnk.fav.on{background:#fdf5e4;border-color:#f6e4bf;color:#8a5a05}
+.linkmore{font-size:12px;color:var(--accent);cursor:pointer;user-select:none}
+
+/* ---------- bars / charts ---------- */
+.bar{height:9px;border-radius:99px;background:#eef0f8;overflow:hidden;margin-top:7px}
+.bar span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+.bar.t span{background:linear-gradient(90deg,var(--teal),#5cc9bd)}
+.barrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line-2)}
+.barrow:last-child{border-bottom:none}
+.barrow .nm{font-size:13.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.barrow .nm em{font-style:normal;color:var(--ink-3);font-size:11.5px;margin-left:6px}
+.barrow .ct{font-size:12.5px;color:var(--ink-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+.trend{display:flex;align-items:flex-end;gap:2px;height:44px}
+.trend i{display:block;flex:1;min-width:3px;background:#d9ddf0;border-radius:2px 2px 0 0;transition:.2s}
+.trend i.on{background:linear-gradient(180deg,var(--accent-2),var(--accent))}
+.yr{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink-3);margin-top:4px}
+
+/* ---------- direction cards ---------- */
+.dir{padding:16px 18px;display:flex;flex-direction:column;gap:9px}
+.dir .hd{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.dir h3{margin:0;font-size:15px;font-weight:650}
+.dir .kv{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--ink-3)}
+.dir .kv b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.dir .top{font-size:12.5px;color:var(--ink-2);border-top:1px solid var(--line-2);padding-top:9px}
+.dir .top div{margin-bottom:5px}
+.dir .top .lb{color:var(--ink-3);margin-right:5px;font-size:11.5px}
+.dir .acts{margin-top:auto;display:flex;gap:7px;flex-wrap:wrap}
+
+/* ---------- gap cards ---------- */
+.gap{padding:16px 18px;border-left:4px solid var(--teal)}
+.gap.k2{border-left-color:var(--accent)}
+.gap.k3{border-left-color:var(--amber)}
+.gap.k4{border-left-color:var(--rose)}
+.gap.k5{border-left-color:#8e6bd8}
+.gap h3{margin:0 0 6px;font-size:15px;font-weight:650;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.gap .why{font-size:13.5px;color:var(--ink-2);margin:0 0 10px}
+.gap .ev{font-size:12.5px;color:var(--ink-3);margin:0;padding-left:0;list-style:none}
+.gap .ev li{padding:3px 0 3px 15px;position:relative}
+.gap .ev li:before{content:"";position:absolute;left:3px;top:11px;width:5px;height:5px;border-radius:99px;background:#c8cee6}
+.gap .prop{margin-top:11px;background:#f7f9ff;border:1px solid #e6eafa;border-radius:10px;padding:11px 13px;font-size:13px}
+.gap .prop .lbl{font-size:11.5px;color:var(--accent);font-weight:650;letter-spacing:.4px;display:block;margin-bottom:3px}
+.gap .prop .lbl+.lbl{margin-top:9px}
+.quote{font-style:normal;color:var(--ink-2);background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 11px;font-size:12.5px;margin:6px 0}
+.quote .src{color:var(--ink-3);font-size:11.5px;margin-top:3px}
+
+/* ---------- classics table ---------- */
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{
+  text-align:left;font-size:12px;color:var(--ink-3);font-weight:600;padding:10px 10px;
+  border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;background:#fff;
+}
+.tbl td{padding:11px 10px;border-bottom:1px solid var(--line-2);vertical-align:top}
+.tbl tr:hover td{background:#fafbff}
+.tbl .ttl{font-weight:550}
+.tbl .ttl a:hover{color:var(--accent);text-decoration:underline}
+.num{font-variant-numeric:tabular-nums;color:var(--ink-2);white-space:nowrap}
+
+/* ---------- modal ---------- */
+.mask{position:fixed;inset:0;background:rgba(18,22,40,.42);backdrop-filter:blur(2px);z-index:60;display:flex;justify-content:flex-end}
+.drawer{width:min(680px,94vw);height:100%;background:#fff;box-shadow:var(--shadow-lg);overflow-y:auto;padding:26px 28px 60px;animation:slide .22s ease}
+@keyframes slide{from{transform:translateX(24px);opacity:.4}to{transform:none;opacity:1}}
+.drawer h2{margin:0 0 4px;font-size:19px;line-height:1.4;padding-right:44px}
+.drawer .close{position:absolute;top:18px;right:22px;border:none;background:#f1f3fa;width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:17px;color:var(--ink-2)}
+.drawer .close:hover{background:#e6e9f6}
+.drawer .sec{margin-top:18px}
+.drawer .sec h4{margin:0 0 7px;font-size:13px;color:var(--ink-3);font-weight:650;letter-spacing:.3px}
+.drawer .abs{font-size:14px;color:var(--ink-2);line-height:1.75;background:#fafbfe;padding:14px 16px;border-radius:11px;border:1px solid var(--line-2)}
+.drawer ul.plain{margin:0;padding-left:18px;font-size:13.5px;color:var(--ink-2)}
+
+/* ---------- misc ---------- */
+.empty{padding:44px 24px;text-align:center;color:var(--ink-3)}
+.empty .big{font-size:34px;opacity:.35;margin-bottom:8px}
+.foot{margin-top:34px;font-size:12px;color:var(--ink-3);line-height:1.9}
+.kw{display:flex;flex-wrap:wrap;gap:6px}
+.savegrid{display:grid;gap:10px}
+.hist{display:flex;flex-wrap:wrap;gap:8px}
+@media (max-width:900px){
+  .g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g2{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .searchrow{flex-direction:column}
+  .brand p{display:none}
+  .wrap{padding:0 15px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo">&#936;</div>
+      <div>
+        <h1>心理学文献探索器</h1>
+        <p>输入研究问题或专业名词 &rarr; 定位文献 · 按方向归类 · 找出还能研究什么</p>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="conn" id="connBadge"><span class="dot"></span>等待检索</div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="card searchcard">
+    <form id="searchForm" autocomplete="off">
+      <div class="searchrow">
+        <input id="q" placeholder="例如：认知失调 ｜ 青少年社交焦虑的干预 ｜ 正念与工作记忆 ｜ sleep and memory consolidation" />
+        <button class="btn" type="submit" id="goBtn">检索文献</button>
+      </div>
+      <div class="advrow">
+        <label>起始年份 <input type="number" id="fromYear" value="1990" min="1800" max="2100"></label>
+        <label>截止年份 <input type="number" id="toYear" value="2026" min="1800" max="2100"></label>
+        <label>最低被引 <input type="number" id="minCite" value="0" min="0"></label>
+        <label><input type="checkbox" id="onlyOA"> 仅开放获取</label>
+        <label><input type="checkbox" id="onlyReview"> 只看综述/元分析</label>
+        <label>数据源
+          <select id="source">
+            <option value="openalex">OpenAlex（2.5 亿条，推荐）</option>
+            <option value="crossref">Crossref（1.5 亿条）</option>
+          </select>
+        </label>
+        <button class="btn ghost mini" type="button" id="clearBtn">重置条件</button>
+      </div>
+      <div class="examples" id="examples"><span class="lab">示例：</span></div>
+    </form>
+  </section>
+
+  <div id="statusBar" class="status hidden"></div>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="overview">总览</button>
+    <button class="tab" data-tab="works">文献列表<span class="n" id="nWorks"></span></button>
+    <button class="tab" data-tab="directions">研究方向</button>
+    <button class="tab" data-tab="gaps">可研究的问题</button>
+    <button class="tab" data-tab="classics">必读经典</button>
+    <button class="tab" data-tab="saved">我的收藏<span class="n" id="nSaved"></span></button>
+  </nav>
+
+  <div id="pending"></div>
+
+  <section id="panel-overview" class="tabpanel"></section>
+  <section id="panel-works" class="tabpanel hidden"></section>
+  <section id="panel-directions" class="tabpanel hidden"></section>
+  <section id="panel-gaps" class="tabpanel hidden"></section>
+  <section id="panel-classics" class="tabpanel hidden"></section>
+  <section id="panel-saved" class="tabpanel hidden"></section>
+
+  <div class="foot" id="foot"></div>
+</main>
+
+<div id="modalRoot"></div>
+
+<script>
+"use strict";
+/* =======================================================================
+   心理学文献探索器 —— 单文件离线应用
+   数据源：OpenAlex（主） / Crossref（备）
+   功能：检索定位 · 方向归类 · 趋势分析 · 研究空白与选题建议 · 收藏导出
+   ======================================================================= */
+/* =========================== 1. 术语库（中英对照） ======================== */
+/* 中文输入先经由此表转成英文检索词，才能在 OpenAlex / Crossref 中命中文献 */
+const GLOSSARY = [
+  // 认知
+  ["认知失调","cognitive dissonance"],["认知一致","cognitive consistency"],["认知负荷","cognitive load"],
+  ["认知控制","cognitive control"],["认知灵活性","cognitive flexibility"],["认知老化","cognitive aging"],
+  ["工作记忆","working memory"],["短时记忆","short-term memory"],["长时记忆","long-term memory"],
+  ["情景记忆","episodic memory"],["语义记忆","semantic memory"],["内隐记忆","implicit memory"],
+  ["记忆巩固","memory consolidation"],["遗忘","forgetting"],["提取练习","retrieval practice"],
+  ["注意","attention"],["注意偏向","attentional bias"],["注意瞬脱","attentional blink"],
+  ["执行功能","executive function"],["抑制控制","inhibitory control"],["任务转换","task switching"],
+  ["心理旋转","mental rotation"],["心理表征","mental representation"],["具身认知","embodied cognition"],
+  ["元认知","metacognition"],["心像","mental imagery"],["语言理解","language comprehension"],
+  ["决策","decision making"],["风险决策","risky decision making"],["损失厌恶","loss aversion"],
+  ["框架效应","framing effect"],["锚定效应","anchoring effect"],["启发式","heuristics"],
+  ["不确定性","uncertainty"],["判断","judgment"],["推理","reasoning"],["问题解决","problem solving"],
+  ["创造力","creativity"],["顿悟","insight"],["意识","consciousness"],["自由意志","free will"],
+  // 发展与教育
+  ["依恋","attachment"],["成人依恋","adult attachment"],["母婴依恋","mother-infant interaction"],
+  ["陌生人焦虑","stranger anxiety"],["分离焦虑","separation anxiety"],["心理理论","theory of mind"],
+  ["认知发展","cognitive development"],["语言习得","language acquisition"],["皮亚杰","piaget"],
+  ["维果茨基","vygotsky"],["青春期","adolescence"],["青少年","adolescents"],["儿童","children"],
+  ["幼儿","preschool children"],["婴儿","infants"],["老年人","older adults"],["老化","aging"],
+  ["学业成就","academic achievement"],["学业拖延","academic procrastination"],["学业倦怠","academic burnout"],
+  ["学习动机","learning motivation"],["内在动机","intrinsic motivation"],["成长型思维","growth mindset"],
+  ["自我决定","self-determination"],["教师效能","teacher self-efficacy"],["课堂管理","classroom management"],
+  ["阅读发展","reading development"],["数学焦虑","math anxiety"],["双语","bilingualism"],
+  // 人格与社会
+  ["人格","personality"],["大五人格","big five personality"],["五因素模型","five factor model"],
+  ["外向性","extraversion"],["神经质","neuroticism"],["尽责性","conscientiousness"],["开放性","openness to experience"],
+  ["宜人性","agreeableness"],["自恋","narcissism"],["马基雅维利主义","machiavellianism"],
+  ["黑暗三角","dark triad"],["自尊","self-esteem"],["自我概念","self-concept"],["自我效能","self-efficacy"],
+  ["自我控制","self-control"],["自我损耗","ego depletion"],["自我提升","self-enhancement"],
+  ["社会认同","social identity"],["社会比较","social comparison"],["从众","conformity"],["服从","obedience"],
+  ["旁观者效应","bystander effect"],["社会助长","social facilitation"],["刻板印象","stereotype"],
+  ["偏见","prejudice"],["歧视","discrimination"],["内隐联想测验","implicit association test"],
+  ["归因","attribution"],["基本归因错误","fundamental attribution error"],["态度","attitude"],
+  ["态度改变","attitude change"],["说服","persuasion"],["社会规范","social norms"],
+  ["亲社会行为","prosocial behavior"],["利他行为","altruism"],["攻击行为","aggression"],
+  ["道德判断","moral judgment"],["合作","cooperation"],["信任","trust"],["公平","fairness"],
+  ["共情","empathy"],["心理化","mentalization"],["人际吸引","interpersonal attraction"],
+  ["亲密关系","romantic relationships"],["婚姻满意度","marital satisfaction"],["恋爱","romantic love"],
+  ["育儿","parenting"],["亲子关系","parent-child relationship"],["家庭功能","family functioning"],
+  ["文化差异","cultural differences"],["集体主义","collectivism"],["个人主义","individualism"],
+  ["性别差异","sex differences"],["社会阶层","socioeconomic status"],["进化心理学","evolutionary psychology"],
+  // 临床与健康
+  ["抑郁","depression"],["抑郁症状","depressive symptoms"],["重度抑郁","major depressive disorder"],
+  ["焦虑","anxiety"],["社交焦虑","social anxiety"],["广泛性焦虑","generalized anxiety"],["考试焦虑","test anxiety"],
+  ["惊恐障碍","panic disorder"],["强迫症","obsessive-compulsive disorder"],["创伤后应激障碍","post-traumatic stress disorder"],
+  ["双相情感障碍","bipolar disorder"],["精神分裂症","schizophrenia"],["妄想","delusion"],["幻觉","hallucination"],
+  ["进食障碍","eating disorder"],["神经性厌食","anorexia nervosa"],["暴食","binge eating"],
+  ["自杀意念","suicidal ideation"],["非自杀性自伤","non-suicidal self-injury"],["自伤","self-harm"],
+  ["物质使用","substance use"],["成瘾","addiction"],["酒精依赖","alcohol dependence"],["手机成瘾","problematic smartphone use"],
+  ["孤独感","loneliness"],["心理韧性","resilience"],["情绪调节","emotion regulation"],["认知重评","cognitive reappraisal"],
+  ["表达抑制","expressive suppression"],["述情障碍","alexithymia"],["情绪智力","emotional intelligence"],
+  ["正念","mindfulness"],["冥想","meditation"],["接纳承诺疗法","acceptance and commitment therapy"],
+  ["认知行为疗法","cognitive behavioral therapy"],["辩证行为疗法","dialectical behavior therapy"],
+  ["暴露疗法","exposure therapy"],["心理治疗","psychotherapy"],["心理咨询","counseling"],
+  ["干预","intervention"],["治疗效果","treatment outcome"],["疗效","efficacy"],["复发","relapse"],
+  ["童年逆境","adverse childhood experiences"],["童年创伤","childhood trauma"],["虐待","maltreatment"],
+  ["压力","stress"],["知觉压力","perceived stress"],["应对方式","coping"],["皮质醇","cortisol"],
+  ["睡眠","sleep"],["失眠","insomnia"],["睡眠质量","sleep quality"],["昼夜节律","circadian rhythm"],
+  ["疼痛","pain"],["慢性疼痛","chronic pain"],["安慰剂效应","placebo effect"],["健康行为","health behavior"],
+  ["心理幸福感","psychological well-being"],["主观幸福感","subjective well-being"],["生活满意度","life satisfaction"],
+  ["心流","flow"],["感恩","gratitude"],["性格优势","character strengths"],["意义感","meaning in life"],
+  ["积极情绪","positive emotion"],["幸福","happiness"],["生活质量","quality of life"],
+  // 神经科学 / 生理
+  ["脑电","electroencephalography"],["事件相关电位","event-related potential"],
+  ["功能磁共振","functional magnetic resonance imaging"],["磁共振","neuroimaging"],
+  ["近红外光谱","near-infrared spectroscopy"],["神经可塑性","neuroplasticity"],
+  ["前额叶","prefrontal cortex"],["杏仁核","amygdala"],["海马","hippocampus"],["多巴胺","dopamine"],
+  ["血清素","serotonin"],["催产素","oxytocin"],["心率变异性","heart rate variability"],
+  ["自主神经","autonomic nervous system"],["眼动","eye tracking"],["瞳孔","pupillometry"],
+  ["行为遗传学","behavior genetics"],["双生子研究","twin study"],["基因环境交互","gene environment interaction"],
+  ["表观遗传","epigenetics"],["肠脑轴","gut-brain axis"],["免疫","inflammation"],
+  // 组织与管理
+  ["工作倦怠","burnout"],["职业倦怠","job burnout"],["工作满意度","job satisfaction"],
+  ["工作投入","work engagement"],["敬业度","employee engagement"],["领导力","leadership"],
+  ["变革型领导","transformational leadership"],["辱虐管理","abusive supervision"],["组织承诺","organizational commitment"],
+  ["心理契约","psychological contract"],["组织认同","organizational identification"],["工作压力","work stress"],
+  ["员工幸福感","employee well-being"],["离职意向","turnover intention"],["远程办公","remote work"],
+  ["工作家庭冲突","work-family conflict"],["团队","team"],["团队效能","team effectiveness"],
+  ["组织公平","organizational justice"],["建言行为","voice behavior"],["创新行为","innovative behavior"],
+  // 方法学
+  ["元分析","meta-analysis"],["系统综述","systematic review"],["文献综述","literature review"],
+  ["随机对照试验","randomized controlled trial"],["纵向研究","longitudinal study"],
+  ["交叉滞后","cross-lagged panel"],["追踪研究","follow-up study"],["日记法","daily diary"],
+  ["经验取样","experience sampling"],["生态瞬时评估","ecological momentary assessment"],
+  ["结构方程模型","structural equation modeling"],["潜变量","latent variable"],
+  ["潜类别分析","latent class analysis"],["多水平模型","multilevel modeling"],
+  ["网络分析","network analysis"],["机器学习","machine learning"],["自然语言处理","natural language processing"],
+  ["中介效应","mediation"],["调节效应","moderation"],["量表编制","scale development"],
+  ["信度","reliability"],["效度","validity"],["测量不变性","measurement invariance"],
+  ["效应量","effect size"],["预注册","preregistration"],["可重复性","reproducibility"],
+  ["开放科学","open science"],["贝叶斯","bayesian"],["被试间设计","between-subjects"],
+  ["被试内设计","within-subjects"],["实验心理学","experimental psychology"],
+  ["横断面研究","cross-sectional study"],["质性研究","qualitative research"],["访谈","interview"],
+  ["问卷调查","survey"],["样本","sample"],["大学生","college students"],["中国","china"],
+  // 补充：高频但容易漏的词条
+  ["拖延","procrastination"],["完美主义","perfectionism"],["成年人","adults"],["成年早期","emerging adulthood"],
+  ["自我同情","self-compassion"],["自我关怀","self-compassion"],["情绪","emotion"],["情绪反应","emotional response"],
+  ["情绪稳定性","emotional stability"],["情绪劳动","emotional labor"],["情绪耗竭","emotional exhaustion"],
+  ["情绪传染","emotional contagion"],["社会支持","social support"],["知觉组织支持","perceived organizational support"],
+  ["心理资本","psychological capital"],["认知偏差","cognitive bias"],["认知能力","cognitive ability"],
+  ["智力","intelligence"],["人格障碍","personality disorder"],["边缘型人格障碍","borderline personality disorder"],
+  ["焦虑障碍","anxiety disorder"],["睡眠障碍","sleep disorder"],["睡眠剥夺","sleep deprivation"],["屏幕时间","screen time"],
+  ["社交媒体","social media use"],["游戏成瘾","gaming disorder"],["校园欺凌","bullying"],["网络欺凌","cyberbullying"],
+  ["注意力缺陷多动障碍","attention deficit hyperactivity disorder"],["自闭症谱系","autism spectrum disorder"],
+  ["学习障碍","learning disability"],["学习策略","learning strategies"],["自我调节学习","self-regulated learning"],
+  ["留守儿童","left-behind children"],["流动儿童","migrant children"],["医学生","medical students"],
+  ["护士","nurses"],["教师","teachers"],["运动员","athletes"],["照护者","caregivers"],["患者","patients"],
+  ["工作绩效","job performance"],["创业","entrepreneurship"],["消费行为","consumer behavior"],
+  ["死亡焦虑","death anxiety"],["健康焦虑","health anxiety"],["躯体症状","somatic symptoms"],
+  ["慢性病","chronic illness"],["危机干预","crisis intervention"],["心理危机","psychological crisis"],
+  ["生命意义","meaning in life"],["未来取向","future orientation"],["学校归属感","school belonging"],
+  ["教师支持","teacher support"],["亲子沟通","parent-adolescent communication"],["教养方式","parenting style"],
+  ["家庭教养","parenting style"],["集体效能","collective efficacy"],["发散思维","divergent thinking"],
+  ["心理评估","psychological assessment"],["临床心理学","clinical psychology"],["咨询心理学","counseling psychology"],
+  ["健康心理学","health psychology"],["运动干预","exercise intervention"],["音乐治疗","music therapy"],
+  ["瑜伽","yoga"],["正念减压","mindfulness-based stress reduction"],["认知训练","cognitive training"],
+  ["在线干预","internet-based intervention"],["数字化干预","digital intervention"],["心理教育","psychoeducation"]
+  ,["认知","cognition"],["学习","learning"],["动机","motivation"],["思维","thinking"],["语言","language"]
+];
+
+/* 研究问题中的“动作词/限定词”：不单独作为检索主线，但决定选题建议的形态 */
+const MODIFIERS = [
+  ["影响因素","predictors determinants"],["风险因素","risk factors"],["保护因素","protective factors"],
+  ["机制","mechanism mediating role"],["中介","mediating role"],["调节","moderating role"],
+  ["测量","measurement assessment"],["量表","scale"],["干预","intervention"],
+  ["治疗","treatment"],["预防","prevention"],["疗效","efficacy effectiveness"],
+  ["相关性","correlates"],["关系","relationship"],["长期影响","long-term effects"],
+  ["发展轨迹","developmental trajectories"],["个体差异","individual differences"],
+  ["性别差异","sex differences"],["文化","culture"],["神经机制","neural mechanisms"],
+  ["综述","review"],["趋势","trends"]
+];
+
+const STOPWORDS = new Set(("the a an and or of to in on for with at by from as is are was were be been being this that these those it its their his her our your my we they he she i you not no but if then than so such can could may might will would should do does did done have has had also more most much many some any other others into over under between among across during after before while about using used use study studies research results result effect effects role roles evidence analysis data based new novel approach approaches case cases however although therefore thus findings finding participants participant method methods significant significantly higher lower increase decrease increased decreased compared comparison association associations associated relationship relationships between among predicted predict predicts prediction model models test tests tested testing sample samples level levels difference differences change changes time year years two three one group groups condition conditions reported report reports showed show shows found suggest suggests suggesting indicate indicates indicating support supports supported according present current recent previous future further need needs important critical key main major").split(/\s+/));
+
+/* 常用示例检索 */
+const EXAMPLES = [
+  "认知失调","青少年社交焦虑的干预","正念与工作记忆","童年逆境与抑郁","成长型思维 学业成就",
+  "工作倦怠 领导力","情绪调节 前额叶","自我控制 自我损耗","依恋 亲密关系","网络成瘾 青少年",
+  "sleep and memory consolidation","mindfulness workplace burnout"
+];
+
+/* =========================== 2. 通用工具 =============================== */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = (s) => String(s == null ? "" : s)
+  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+  .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+const enc = encodeURIComponent;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const median = (arr) => {
+  if (!arr.length) return 0;
+  const a = arr.slice().sort((x, y) => x - y), m = a.length >> 1;
+  return a.length % 2 ? a[m] : Math.round((a[m - 1] + a[m]) / 2);
+};
+const pct = (n, d) => (d ? Math.round((n / d) * 100) : 0);
+const nowYear = new Date().getFullYear();
+const uniq = (a) => Array.from(new Set(a));
+const prettyNum = (n) => (n >= 10000 ? (n / 10000).toFixed(1).replace(/\.0$/, "") + "万" : String(n));
+
+function topCounts(map, n, minCount) {
+  return Array.from(map.entries())
+    .filter(e => e[1] >= (minCount == null ? 1 : minCount))
+    .sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])))
+    .slice(0, n);
+}
+
+/* 中文优先的检索词构造：把中文问题翻译为英文检索式 */
+function buildQueryPlan(raw) {
+  const input = String(raw || "").trim();
+  const lower = input.toLowerCase();
+  const hits = [];
+  for (const [zh, en] of GLOSSARY) if (input.includes(zh)) hits.push({ zh, en, len: zh.length });
+  hits.sort((a, b) => b.len - a.len);
+  // 去除被更长术语包含的短术语（如“焦虑” vs “社交焦虑”）
+  const terms = [];
+  for (const h of hits) {
+    if (!terms.some(t => t.zh.includes(h.zh))) terms.push(h);
+  }
+  const mods = MODIFIERS.filter(m => input.includes(m[0]));
+
+  const enWords = (input.match(/[A-Za-z][A-Za-z\-']{1,}/g) || [])
+    .map(w => w.replace(/^[-']+|[-']+$/g, ""))
+    .filter(w => w.length > 1 && !STOPWORDS.has(w.toLowerCase()));
+
+  const core = uniq(terms.map(t => t.en));
+  const extra = uniq(enWords.filter(w => !core.some(c => c.toLowerCase().includes(w.toLowerCase()))));
+  const all = core.concat(extra);
+  const hasCN = /[\u4e00-\u9fa5]/.test(input);
+
+  let primary, fallback, mode;
+  if (all.length >= 2) {
+    primary = all.join(" ");              // 精确式：多个概念共同出现
+    fallback = all.slice(0, 1).join(" "); // 宽泛式：最核心概念
+    mode = "translated";
+  } else if (all.length === 1) {
+    primary = all[0]; fallback = all[0]; mode = "translated";
+  } else {
+    primary = input.replace(/[?？。，,;；:：]/g, " ").replace(/\s+/g, " ").trim();
+    fallback = primary; mode = hasCN ? "raw-cn" : "raw";
+  }
+  return {
+    input, primary, fallback, terms, mods, mode,
+    termZh: terms.map(t => t.zh).join(" · "),
+    modZh: mods.map(m => m[0]).join(" · "),
+    modEn: mods.map(m => m[1]).join(" · ")
+  };
+}
+
+/* 摘要倒排索引还原（OpenAlex 格式） */
+function restoreAbstract(inv) {
+  if (!inv) return "";
+  const slots = [];
+  for (const w of Object.keys(inv)) for (const p of inv[w]) slots[p] = w;
+  return slots.filter(Boolean).join(" ").replace(/\s+([.,;:?!)])/g, "$1").trim();
+}
+
+/* 句级切分（用于抽取“未来研究”语句） */
+function splitSentences(text) {
+  return String(text || "")
+    .replace(/\s+/g, " ")
+    .split(/(?<=[.!?])\s+(?=[A-Z(])/)
+    .map(s => s.trim())
+    .filter(s => s.length > 24);
+}
+/* =========================== 3. 数据层（OpenAlex / Crossref） =========== */
+const MAILTO = "psych.literature.explorer@example.com"; // 进入 OpenAlex 友善池，提高限额
+const OPENALEX = "https://api.openalex.org";
+const CROSSREF = "https://api.crossref.org";
+
+async function fetchJSON(url, ms) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms || 20000);
+  try {
+    const res = await fetch(url, { signal: ctrl.signal, headers: { Accept: "application/json" } });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    return await res.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function oaFilterString(opts) {
+  const f = [];
+  if (opts.fromYear) f.push("from_publication_date:" + opts.fromYear + "-01-01");
+  if (opts.toYear) f.push("to_publication_date:" + opts.toYear + "-12-31");
+  if (opts.onlyOA) f.push("is_oa:true");
+  if (opts.onlyReview) f.push("type:review");
+  return f.join(",");
+}
+
+/* ---------- OpenAlex ---------- */
+function oaUrl(q, opts, sort, perPage, page) {
+  const u = new URL(OPENALEX + "/works");
+  u.searchParams.set("search", q);
+  u.searchParams.set("per-page", String(perPage || 100));
+  u.searchParams.set("page", String(page || 1));
+  u.searchParams.set("mailto", MAILTO);
+  u.searchParams.set("select", "id,doi,title,display_name,publication_year,publication_date,type,cited_by_count,authorships,primary_location,open_access,best_oa_location,abstract_inverted_index,topics,primary_topic,referenced_works_count,language");
+  const f = oaFilterString(opts);
+  if (f) u.searchParams.set("filter", f);
+  if (sort) u.searchParams.set("sort", sort);
+  return u.toString();
+}
+
+function normOpenAlex(w) {
+  const auth = (w.authorships || []).map(a => (a.author && a.author.display_name) || "").filter(Boolean);
+  const src = (w.primary_location && w.primary_location.source) || {};
+  const topics = (w.topics || []).map(t => ({
+    name: t.display_name,
+    sub: t.subfield && t.subfield.display_name,
+    field: t.field && t.field.display_name,
+    domain: t.domain && t.domain.display_name
+  }));
+  const pt = w.primary_topic || {};
+  return {
+    id: w.id || "",
+    oaUrl: w.id || "",
+    doi: (w.doi || "").replace(/^https?:\/\/doi\.org\//, ""),
+    title: w.title || w.display_name || "(无标题)",
+    year: w.publication_year || null,
+    date: w.publication_date || "",
+    authors: auth,
+    journal: src.display_name || "—",
+    publisher: src.host_organization_name || "",
+    cites: w.cited_by_count || 0,
+    type: w.type || "article",
+    isOA: !!(w.open_access && w.open_access.is_oa),
+    oaPdf: (w.best_oa_location && (w.best_oa_location.pdf_url || w.best_oa_location.landing_page_url)) || (w.open_access && w.open_access.oa_url) || "",
+    abstract: restoreAbstract(w.abstract_inverted_index),
+    topics,
+    primaryTopic: {
+      name: pt.display_name || (topics[0] && topics[0].name) || "",
+      sub: (pt.subfield && pt.subfield.display_name) || (topics[0] && topics[0].sub) || "",
+      field: (pt.field && pt.field.display_name) || (topics[0] && topics[0].field) || "",
+      domain: (pt.domain && pt.domain.display_name) || (topics[0] && topics[0].domain) || ""
+    },
+    refCount: w.referenced_works_count || 0,
+    lang: w.language || "",
+    srcTag: "OpenAlex"
+  };
+}
+
+async function searchOpenAlex(q, opts, sort, perPage, page) {
+  const data = await fetchJSON(oaUrl(q, opts, sort, perPage || 100, page || 1));
+  const list = (data.results || []).map(normOpenAlex);
+  return { works: list, total: (data.meta && data.meta.count) || list.length };
+}
+
+/* ---------- Crossref ---------- */
+function crossrefUrl(q, opts, sort, rows, offset) {
+  const u = new URL(CROSSREF + "/works");
+  u.searchParams.set("query.bibliographic", q);
+  u.searchParams.set("rows", String(rows || 100));
+  u.searchParams.set("offset", String(offset || 0));
+  u.searchParams.set("mailto", MAILTO);
+  u.searchParams.set("select", "DOI,title,author,issued,container-title,type,is-referenced-by-count,abstract,subject,URL,license,link");
+  const f = [];
+  if (opts.fromYear) f.push("from-pub-date:" + opts.fromYear + "-01-01");
+  if (opts.toYear) f.push("until-pub-date:" + opts.toYear + "-12-31");
+  if (f.length) u.searchParams.set("filter", f.join(","));
+  if (sort) u.searchParams.set("sort", sort);
+  return u.toString();
+}
+
+function stripJats(s) {
+  return String(s || "")
+    .replace(/<jats:[^>]*>/g, " ").replace(/<\/jats:[^>]*>/g, " ")
+    .replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function normCrossref(w) {
+  const auth = (w.author || []).map(a => [a.given, a.family].filter(Boolean).join(" ") || a.name || "").filter(Boolean);
+  const year = (w.issued && w.issued["date-parts"] && w.issued["date-parts"][0] && w.issued["date-parts"][0][0]) || null;
+  const title = (w.title && w.title[0]) || "(无标题)";
+  const subs = (w.subject || []).slice(0, 5);
+  const typeMap = { "journal-article": "article", "book-chapter": "book-chapter", "book": "book", "posted-content": "preprint", "proceedings-article": "proceedings-article", "dissertation": "dissertation" };
+  return {
+    id: "doi:" + (w.DOI || ""),
+    oaUrl: "",
+    doi: w.DOI || "",
+    title,
+    year,
+    date: year ? year + "-01-01" : "",
+    authors: auth,
+    journal: (w["container-title"] && w["container-title"][0]) || "—",
+    publisher: w.publisher || "",
+    cites: w["is-referenced-by-count"] || 0,
+    type: typeMap[w.type] || w.type || "article",
+    isOA: !!(w.license && w.license.length),
+    oaPdf: (w.link && w.link[0] && w.link[0].URL) || "",
+    abstract: stripJats(w.abstract),
+    topics: subs.map(s => ({ name: s, sub: s, field: "", domain: "" })),
+    primaryTopic: { name: subs[0] || "未分类", sub: subs[0] || "未分类", field: "", domain: "" },
+    refCount: 0,
+    lang: w.language || "",
+    srcTag: "Crossref"
+  };
+}
+
+async function searchCrossref(q, opts, sort, rows, offset) {
+  const data = await fetchJSON(crossrefUrl(q, opts, sort, rows || 100, offset || 0));
+  const msg = data.message || {};
+  const list = (msg.items || []).map(normCrossref);
+  return { works: list, total: msg["total-results"] || list.length };
+}
+
+/* ---------- 统一检索入口：多路合并 + 去重 ---------- */
+function dedupe(works) {
+  const seen = new Map();
+  const score = (w) => (w.abstract ? 3 : 0) + (w.cites ? 2 : 0) + (w.doi ? 1 : 0) + (w.topics && w.topics.length > 1 ? 1 : 0);
+  for (const w of works) {
+    const key = (w.doi || "").toLowerCase() || (w.title || "").toLowerCase().replace(/[^a-z0-9\u4e00-\u9fa5]/g, "").slice(0, 70);
+    if (!key) continue;
+    const cur = seen.get(key);
+    if (!cur || score(w) > score(cur)) seen.set(key, w);
+  }
+  return Array.from(seen.values());
+}
+
+function applyClientFilters(works, opts, minCite) {
+  return works.filter(w => {
+    if (opts.fromYear && w.year && w.year < opts.fromYear) return false;
+    if (opts.toYear && w.year && w.year > opts.toYear) return false;
+    if (minCite && (w.cites || 0) < minCite) return false;
+    if (opts.onlyOA && !w.isOA) return false;
+    if (opts.onlyReview && !isReviewish(w)) return false;
+    return true;
+  });
+}
+
+async function runSearch(plan, opts, minCite, onProgress) {
+  const searching = opts.source === "crossref" ? searchCrossref : searchOpenAlex;
+  onProgress && onProgress("正在检索「" + plan.primary + "」的精确匹配文献…");
+  const res = await searching(plan.primary, opts, null, 100, 1);
+  let works = res.works.slice();
+  let total = res.total;
+
+  if (works.length < 40 && plan.fallback !== plan.primary) {
+    onProgress && onProgress("扩大检索范围：以核心概念「" + plan.fallback + "」补充文献…");
+    try {
+      const res2 = await searching(plan.fallback, opts, null, 100, 1);
+      works = works.concat(res2.works);
+      total = Math.max(total, res2.total);
+    } catch (e) { /* 补充检索失败不影响主流程 */ }
+  }
+
+  works = dedupe(works);
+  const filtered = applyClientFilters(works, opts, minCite);
+  return { works: filtered, total, allFound: works.length };
+}
+
+/* 经典文献：按被引排序单独取一次 */
+async function runClassics(plan, opts) {
+  const fetching = opts.source === "crossref" ? searchCrossref : searchOpenAlex;
+  const sort = opts.source === "crossref" ? "is-referenced-by-count" : "cited_by_count:desc";
+  const q = plan.fallback || plan.primary;
+  try {
+    const res = await fetching(q, { fromYear: opts.fromYear, toYear: opts.toYear, onlyOA: false, onlyReview: false }, sort, 60, 1);
+    return applyClientFilters(res.works, { fromYear: opts.fromYear, toYear: opts.toYear }, 5)
+      .sort((a, b) => (b.cites || 0) - (a.cites || 0))
+      .slice(0, 24);
+  } catch (e) { return []; }
+}
+
+/* ---------- 离线示例数据（无网络时仍可完整体验） ---------- */
+const DEMO_WORKS = [
+  { title: "Cognitive consequences of forced compliance", authors: ["Leon Festinger", "James M. Carlsmith"], year: 1959, journal: "The Journal of Abnormal and Social Psychology", cites: 4210, doi: "10.1037/h0041593", type: "article", isOA: false, abstract: "Festinger and Carlsmith's classic experiment asked participants to perform a boring task and then to tell a waiting participant that it was interesting. Participants paid only one dollar reported the task as significantly more enjoyable than those paid twenty dollars, providing the original experimental demonstration of insufficient justification and cognitive dissonance.", topics: [{ name: "Cognitive dissonance", sub: "Social Psychology", field: "Psychology", domain: "Social Sciences" }] },
+  { title: "Self-perception: An alternative interpretation of cognitive dissonance phenomena", authors: ["Daryl J. Bem"], year: 1967, journal: "Psychological Review", cites: 3380, doi: "10.1037/h0024835", type: "article", isOA: false, abstract: "An alternative interpretation of the cognitive dissonance phenomena is proposed in terms of self-perception, in which individuals infer their attitudes from their own behavior and the circumstances in which it occurs. The theory is applied to the experimental evidence on dissonance reduction.", topics: [{ name: "Self-perception theory", sub: "Social Psychology", field: "Psychology", domain: "Social Sciences" }] },
+  { title: "On the motivational nature of cognitive dissonance: Dissonance as psychological discomfort", authors: ["Andrew J. Elliot", "Patricia G. Devine"], year: 1994, journal: "Journal of Personality and Social Psychology", cites: 1290, doi: "10.1037/0022-3514.67.3.382", type: "article", isOA: false, abstract: "The motivational nature of cognitive dissonance was examined in a series of experiments testing whether dissonance is experienced as psychological discomfort. Results indicate that dissonance arousal involves negative affect that motivates attitude change, but future research is needed to specify boundary conditions and individual differences in the arousal process.", topics: [{ name: "Cognitive dissonance", sub: "Social Psychology", field: "Psychology", domain: "Social Sciences" }] },
+  { title: "Neural correlates of cognitive dissonance and choice-induced preference change", authors: ["Keise Izuma", "Mitsuru Matsumoto", "Ken Murayama", "Madoka Matsumoto", "Kenji Matsumoto"], year: 2010, journal: "PNAS", cites: 460, doi: "10.1073/pnas.1011879108", type: "article", isOA: true, abstract: "Using functional magnetic resonance imaging, we identified brain regions associated with cognitive dissonance reduction and choice-induced preference change. Activity in the dorsal anterior cingulate cortex predicted subsequent preference change, suggesting a role for conflict monitoring.", topics: [{ name: "Cognitive dissonance", sub: "Neuroscience", field: "Neuroscience", domain: "Life Sciences" }] },
+  { title: "Neural activity predicts attitude change in cognitive dissonance", authors: ["Vincent van Veen", "Marie K. Krug", "Jonathan W. Schooler", "Cameron S. Carter"], year: 2009, journal: "Nature Neuroscience", cites: 720, doi: "10.1038/nn.2413", type: "article", isOA: false, abstract: "We used functional magnetic resonance imaging to investigate the neural mechanisms of cognitive dissonance. Left inferior frontal gyrus and anterior insula activity during dissonance predicted subsequent attitude change, indicating that dissonance engages a network supporting conflict detection and emotional processing.", topics: [{ name: "Cognitive dissonance", sub: "Neuroscience", field: "Neuroscience", domain: "Life Sciences" }] },
+  { title: "A review of cognitive dissonance theory in management research: Opportunities for further development", authors: ["Ana Sierra Hinojosa", "Kelly Davis McCauley", "Brooke A. Randolph", "Cristina D. McCauley"], year: 2017, journal: "Journal of Management", cites: 320, doi: "10.1177/0149206316668236", type: "review", isOA: false, abstract: "We review the use of cognitive dissonance theory in management research over five decades. Research in this domain has largely focused on attitude change; little is known about how dissonance operates in teams, across cultures, or in field settings, and future research should explore these boundaries.", topics: [{ name: "Cognitive dissonance", sub: "Organizational Behavior", field: "Business", domain: "Social Sciences" }] },
+  { title: "Dealing with dissonance: A review of cognitive dissonance reduction", authors: ["April McGrath"], year: 2017, journal: "Social and Personality Psychology Compass", cites: 300, doi: "10.1111/spc3.12362", type: "review", isOA: false, abstract: "This review examines the strategies people use to reduce cognitive dissonance, including attitude change, trivialization, and self-affirmation. Evidence is limited regarding which reduction strategies are selected under which conditions, and this remains an open question.", topics: [{ name: "Cognitive dissonance reduction", sub: "Social Psychology", field: "Psychology", domain: "Social Sciences" }] },
+  { title: "Respectable challenges to respectable theory: Cognitive dissonance theory requires conceptualization clarification and operational tools", authors: ["David C. Vaidis", "Alexandre Bran"], year: 2019, journal: "Frontiers in Psychology", cites: 210, doi: "10.3389/fpsyg.2019.01189", type: "article", isOA: true, abstract: "Cognitive dissonance theory is a cornerstone of social psychology, yet the field still lacks agreement on how the concept should be conceptualized and measured. We argue that preregistered, multi-method research is needed to establish the reliability and replicability of classic paradigms.", topics: [{ name: "Cognitive dissonance", sub: "Social Psychology", field: "Psychology", domain: "Social Sciences" }] },
+  { title: "The neural basis of rationalization: Cognitive dissonance reduction during decision-making", authors: ["Johanna M. Jarcho", "Elliot T. Berkman", "Matthew D. Lieberman"], year: 2011, journal: "Social Cognitive and Affective Neuroscience", cites: 350, doi: "10.1093/scan/nsq054", type: "article", isOA: true, abstract: "We examined the neural correlates of dissonance reduction during decision making. Activity in the posterior medial frontal cortex was associated with spreading of alternatives, suggesting that dissonance reduction recruits domain-general conflict monitoring.", topics: [{ name: "Cognitive dissonance", sub: "Neuroscience", field: "Neuroscience", domain: "Life Sciences" }] }
+];
+
+function demoResult() {
+  const works = DEMO_WORKS.map(w => Object.assign({}, w, {
+    id: "demo:" + (w.doi || w.title),
+    oaUrl: w.doi ? "https://doi.org/" + w.doi : "",
+    primaryTopic: { name: w.topics[0].name, sub: w.topics[0].sub, field: w.topics[0].field, domain: w.topics[0].domain },
+    topics: w.topics, srcTag: "离线示例"
+  }));
+  return { works, total: works.length, allFound: works.length, demo: true };
+}
+
+/* ---------- 本地存储：收藏 / 历史 ---------- */
+const LS_FAV = "psy-lit-explorer-fav-v1";
+const LS_HIST = "psy-lit-explorer-hist-v1";
+function loadFav() { try { return JSON.parse(localStorage.getItem(LS_FAV)) || []; } catch (e) { return []; } }
+function saveFav(list) { try { localStorage.setItem(LS_FAV, JSON.stringify(list)); } catch (e) {} }
+function loadHist() { try { return JSON.parse(localStorage.getItem(LS_HIST)) || []; } catch (e) { return []; } }
+function pushHist(q) {
+  const list = loadHist().filter(x => x !== q);
+  list.unshift(q);
+  try { localStorage.setItem(LS_HIST, JSON.stringify(list.slice(0, 12))); } catch (e) {}
+}
+function favKey(w) { return (w.doi || w.id || w.title || "").toLowerCase(); }
+function isFav(w) { return loadFav().some(x => favKey(x) === favKey(w)); }
+function toggleFav(w) {
+  const list = loadFav();
+  const i = list.findIndex(x => favKey(x) === favKey(w));
+  if (i >= 0) list.splice(i, 1); else list.unshift(w);
+  saveFav(list.slice(0, 500));
+  return i < 0;
+}
+/* =========================== 4. 分析引擎 =============================== */
+/* 方法学关键词探测：用于判断一个领域的“研究设计结构” */
+const METHODS = [
+  ["元分析 / 系统综述", /meta-analys|systematic review|meta-analytic|scoping review/i],
+  ["随机对照试验", /randomi[sz]ed controlled|randomi[sz]ed (clinical )?trial|\bRCTs?\b|randomly assigned to (a )?(condition|group|intervention)/i],
+  ["实验操纵", /we (conducted|ran|designed) (an |two |three )?experiment|manipulat(ed|ion)|priming paradigm|between-subjects|within-subjects/i],
+  ["纵向 / 追踪设计", /longitudinal|prospective|follow-up (study|data|assessment)|panel (study|data)|cohort/i],
+  ["交叉滞后模型", /cross-lagged/i],
+  ["日记法 / 经验取样", /daily diary|experience sampling|ecological momentary assessment|ambulatory assessment/i],
+  ["脑成像 / 电生理", /fmri|functional magnetic resonance|neuroimaging|eeg|erp|event-related potential|fnirs/i],
+  ["眼动 / 生理指标", /eye[- ]track|pupillometr|heart rate variability|skin conductance|electrodermal|cortisol/i],
+  ["问卷 / 量表编制", /questionnaire|survey (study|data)|scale (development|validation)|psychometric|factor analysis|reliability and validity/i],
+  ["结构方程 / 潜变量", /structural equation|latent (variable|class|profile)|multilevel model|\bSEM\b|mediation model|moderated mediation/i],
+  ["网络分析", /network analysis|network approach|symptom network/i],
+  ["机器学习 / 计算建模", /machine learning|deep learning|natural language processing|random forest|predictive model|computational model/i],
+  ["质性研究", /qualitative|grounded theory|thematic analysis|focus group|semi-structured interview/i],
+  ["遗传 / 双生子", /twin study|heritab|genome-wide|polygenic|behavior genetics|\bGWAS\b/i],
+  ["跨文化比较", /cross-cultural|across \d+ countries|cultural comparison|cross-national/i],
+  ["预注册 / 开放科学", /preregist|pre-regist|registered report|open (data|materials|science)|replication (study|attempt)/i],
+  ["干预 / 训练方案", /intervention (program|study|group)|training program|treatment (as usual|group)|waitlist control|psychotherapy/i]
+];
+
+const POPULATIONS = [
+  ["大学生", /college students?|undergraduate|university students?/i],
+  ["青少年", /adolescen|teenagers?|youth|high school students?/i],
+  ["儿童", /\bchildren\b|childhood|preschool|school-aged/i],
+  ["老年人", /older adults?|elderly|late-life|aging population/i],
+  ["临床样本", /patients?|clinical sample|diagnosed with|disorder sample/i],
+  ["在职员工", /employees?|workers?|workplace|organizational sample|staff members?/i],
+  ["中国样本", /\bchin(a|ese)\b/i],
+  ["跨文化 / 多国", /cross-cultural|across countries|\d+ countries|multinational/i],
+  ["一般人群", /community sample|general population|nationally representative|community-dwelling/i],
+  ["亲子 / 家庭", /parents? and (their )?children|mother-infant|parent-child|family dyads?/i]
+];
+
+/* “未来研究”语句特征：作者自己写下的研究缺口 */
+const FUTURE_PAT = /future (research|studies|work)|further (research|study|studies|work|investigation)|remains? (unclear|unknown|unresolved|to be)|is still (unclear|unknown|poorly understood)|little is known|has yet to be|understudied|underexplored|scant|limited (evidence|research|attention)|warrants? further|should be (examined|explored|investigated|tested|addressed)|need(s)? (to be|for) (further|more)|no (study|research) has|not yet been (examined|tested)|open question|deserves? further/i;
+const PRACTICAL_PAT = /implication|practice|polic|clinical|train(ing)?|education|public health|prevention|intervention/i;
+
+function textOf(w) { return (w.title || "") + " " + (w.abstract || "") + " " + ((w.topics || []).map(t => t.name).join(" ")); }
+function isReviewish(w) {
+  if ((w.type || "").toLowerCase() === "review") return true;
+  return /meta-analys|systematic review|umbrella review|scoping review|narrative review/i.test(textOf(w));
+}
+
+/* 心理学文本里的“万金油词”：出现在标题中说明不了主题，统计时剔除 */
+const PSY_STOP = new Set(("cognitive social psychological psychology behavior behavioural behavioral mental human people person individual individuals group groups based using results findings study studies research evidence effect effects role data analysis model models participant participants sample samples significant associated association relationship relationships difference differences factor factors level levels change changes time year years higher lower increase increase decreased compared comparison present current recent previous future further important critical key main major large small high low women men male female age aged total number").split(/\s+/));
+
+/* 词频统计（标题 + 摘要）：单词 + 相邻词组 */
+function extractKeywords(works, limit) {
+  const counts = new Map();
+  for (const w of works) {
+    const text = ((w.title || "") + " " + (w.abstract || "").slice(0, 900));
+    const raw = text.toLowerCase().match(/[a-z][a-z\-]{3,}/g) || [];
+    const keep = raw.filter(t => !STOPWORDS.has(t) && !PSY_STOP.has(t) && t.length > 3);
+    for (const t of uniq(keep)) counts.set(t, (counts.get(t) || 0) + 1);
+    const seenBg = new Set();
+    for (let i = 0; i < raw.length - 1; i++) {
+      const a = raw[i], b = raw[i + 1];
+      if (STOPWORDS.has(a) || STOPWORDS.has(b) || PSY_STOP.has(a) || PSY_STOP.has(b)) continue;
+      const bg = a + " " + b;
+      if (bg.length <= 12 || seenBg.has(bg)) continue;
+      seenBg.add(bg);
+      counts.set(bg, (counts.get(bg) || 0) + 1);
+    }
+  }
+  const minC = works.length >= 60 ? 3 : 2;
+  return topCounts(counts, limit || 14, minC);
+}
+
+function dirKeyOf(w) {
+  const p = w.primaryTopic || {};
+  return p.sub || p.field || p.domain || (w.topics && w.topics[0] && (w.topics[0].sub || w.topics[0].field)) || "其他 / 未归类";
+}
+
+/* 主分析函数 */
+function analyze(works, plan, opts) {
+  const total = works.length;
+  const A = {
+    total, dirs: [], years: [], yearBins: [], types: [], methods: [], populations: [],
+    keywords: [], journals: [], authors: [], futureSents: [], recentShare: 0, openShare: 0,
+    reviewCount: 0, rctCount: 0, medianYear: 0, avgCites: 0, topCites: [], gaps: [], questions: [],
+    coMatrix: [], topicCounts: [], span: [0, 0], yspan: [0, 0]
+  };
+  if (!total) return A;
+
+  const yearArr = works.map(w => w.year).filter(Boolean);
+  A.years = yearArr;
+  A.medianYear = median(yearArr);
+  A.span = yearArr.length ? [Math.min.apply(null, yearArr), Math.max.apply(null, yearArr)] : [0, 0];
+  A.avgCites = Math.round(works.reduce((s, w) => s + (w.cites || 0), 0) / total);
+  A.openShare = pct(works.filter(w => w.isOA).length, total);
+  const recentCut = (opts.toYear || nowYear) - 2;
+  A.recentShare = pct(works.filter(w => w.year && w.year >= recentCut).length, total);
+
+  const yb = new Map();
+  for (const y of yearArr) yb.set(y, (yb.get(y) || 0) + 1);
+  const lo = Math.max(A.span[0], (opts.fromYear || A.span[0]));
+  const hi = Math.max(A.span[1], Math.min(opts.toYear || A.span[1], nowYear));
+  A.yspan = [lo, hi];
+  for (let y = lo; y <= hi; y++) A.yearBins.push({ y, n: yb.get(y) || 0 });
+
+  /* 研究方向归类 */
+  const dirMap = new Map();
+  for (const w of works) {
+    const key = dirKeyOf(w);
+    if (!dirMap.has(key)) dirMap.set(key, []);
+    dirMap.get(key).push(w);
+  }
+  A.dirs = Array.from(dirMap.entries()).map(function (ent) {
+    const name = ent[0], list = ent[1];
+    const ys = list.map(w => w.year).filter(Boolean);
+    const jm = new Map(), am = new Map(), ym = new Map();
+    for (const w of list) {
+      if (w.journal && w.journal !== "—") jm.set(w.journal, (jm.get(w.journal) || 0) + 1);
+      for (const a of (w.authors || []).slice(0, 3)) am.set(a, (am.get(a) || 0) + 1);
+      if (w.year) ym.set(w.year, (ym.get(w.year) || 0) + 1);
+    }
+    const trend = [];
+    for (let y = lo; y <= hi; y++) trend.push({ y, n: ym.get(y) || 0 });
+    const half = Math.floor(trend.length / 2);
+    const early = trend.slice(0, half).reduce((s, d) => s + d.n, 0);
+    const late = trend.slice(half).reduce((s, d) => s + d.n, 0);
+    const recentN = list.filter(w => w.year && w.year >= recentCut).length;
+    const citeSum = list.reduce((s, w) => s + (w.cites || 0), 0);
+    return {
+      name, field: (list[0].primaryTopic || {}).field || "", domain: (list[0].primaryTopic || {}).domain || "",
+      count: list.length, share: pct(list.length, total), cites: citeSum,
+      avgCites: Math.round(citeSum / list.length), medianYear: median(ys),
+      recentCount: recentN, recency: pct(recentN, list.length),
+      trend, early, late, growth: late - early,
+      topWorks: list.slice().sort((a, b) => (b.cites || 0) - (a.cites || 0)).slice(0, 4),
+      journals: topCounts(jm, 3), authors: topCounts(am, 3),
+      keywords: extractKeywords(list, 8),
+      reviewShare: pct(list.filter(isReviewish).length, list.length),
+      works: list
+    };
+  }).sort((a, b) => b.count - a.count);
+  if (A.dirs.length > 14) A.dirs = A.dirs.slice(0, 14);
+
+  /* 类型 / 方法 / 样本 */
+  const tm = new Map(), mm = new Map(), pm = new Map();
+  for (const w of works) {
+    const t = w.type || "article";
+    tm.set(t, (tm.get(t) || 0) + 1);
+    const txt = textOf(w);
+    for (const m of METHODS) if (m[1].test(txt)) mm.set(m[0], (mm.get(m[0]) || 0) + 1);
+    for (const p of POPULATIONS) if (p[1].test(txt)) pm.set(p[0], (pm.get(p[0]) || 0) + 1);
+  }
+  A.types = topCounts(tm, 8);
+  A.methods = METHODS.map(m => [m[0], mm.get(m[0]) || 0]).sort((a, b) => b[1] - a[1]);
+  A.populations = POPULATIONS.map(p => [p[0], pm.get(p[0]) || 0]).sort((a, b) => b[1] - a[1]);
+  A.reviewCount = works.filter(isReviewish).length;
+  A.rctCount = mm.get("随机对照试验") || 0;
+
+  const jm2 = new Map(), am2 = new Map();
+  for (const w of works) {
+    if (w.journal && w.journal !== "—") jm2.set(w.journal, (jm2.get(w.journal) || 0) + 1);
+    for (const a of (w.authors || []).slice(0, 4)) am2.set(a, (am2.get(a) || 0) + 1);
+  }
+  A.journals = topCounts(jm2, 10);
+  A.authors = topCounts(am2, 12);
+  A.topCites = works.slice().sort((a, b) => (b.cites || 0) - (a.cites || 0)).slice(0, 10);
+  A.keywords = extractKeywords(works, 26);
+
+  /* 主题共现：用于发现交叉空白 */
+  const topicMap = new Map();
+  for (const w of works) {
+    const names = uniq((w.topics || []).map(t => t.name).filter(Boolean)).slice(0, 4);
+    for (const n of names) {
+      if (!topicMap.has(n)) topicMap.set(n, { count: 0, works: new Set(), pairs: new Map() });
+      const rec = topicMap.get(n);
+      rec.count++; rec.works.add(w);
+      for (const m of names) if (m !== n) rec.pairs.set(m, (rec.pairs.get(m) || 0) + 1);
+    }
+  }
+  const topicList = Array.from(topicMap.entries()).map(e => ({ name: e[0], count: e[1].count, pairs: e[1].pairs, works: e[1].works }))
+    .filter(t => t.count >= Math.max(3, Math.round(total * 0.02)))
+    .sort((a, b) => b.count - a.count).slice(0, 18);
+  A.topicCounts = topicList.map(t => [t.name, t.count]);
+  const pairs = [];
+  for (let i = 0; i < topicList.length; i++) {
+    for (let j = i + 1; j < topicList.length; j++) {
+      const a = topicList[i], b = topicList[j];
+      const la = a.name.toLowerCase(), lb = b.name.toLowerCase();
+      if (la.indexOf(lb) >= 0 || lb.indexOf(la) >= 0) continue;
+      const p = a.pairs.get(b.name) || 0;
+      const expect = (a.count * b.count) / Math.max(1, total);
+      pairs.push({ a, b, pair: p, expect: +expect.toFixed(1), score: +(Math.min(a.count, b.count) / (1 + p * 2)).toFixed(2) });
+    }
+  }
+  A.coMatrix = pairs.sort((x, y) => y.score - x.score);
+
+  /* 摘要中作者自述的研究缺口 */
+  for (const w of works) {
+    if (!w.abstract) continue;
+    const sents = splitSentences(w.abstract);
+    for (const s of sents) {
+      if (FUTURE_PAT.test(s) && s.length < 420) {
+        A.futureSents.push({ text: s, work: w, practical: PRACTICAL_PAT.test(s) });
+        break;
+      }
+    }
+  }
+  A.futureSents.sort((a, b) => (b.work.cites || 0) - (a.work.cites || 0));
+  if (A.futureSents.length > 40) A.futureSents = A.futureSents.slice(0, 40);
+
+  A.gaps = buildGaps(A, plan, opts);
+  A.questions = buildQuestions(A, plan, opts);
+  return A;
+}
+
+/* ---------- 研究空白识别 ---------- */
+function buildGaps(A, plan, opts) {
+  const gaps = [];
+  const total = A.total;
+
+  if (A.futureSents.length >= 2) {
+    gaps.push({
+      kind: 1, tag: "作者自述缺口",
+      title: "文献中反复出现“尚不清楚 / 需要未来研究”",
+      why: "本次检索到的 " + total + " 篇文献中，有 " + A.futureSents.length + " 篇的摘要明确写出“未来研究应…… / 仍不清楚 / 研究不足”。这类句子是原作者亲自标注的空白点，可信度最高，也最容易直接转化成选题。",
+      ev: A.futureSents.slice(0, 4).map(f => ({ text: f.text, work: f.work })),
+      keywords: A.keywords.slice(0, 4).map(k => k[0]).join(" ")
+    });
+  }
+
+  const cross = A.coMatrix.filter(p => p.pair <= Math.max(1, Math.round(p.expect * 0.5)) && p.a.count >= 4 && p.b.count >= 4).slice(0, 3);
+  for (const c of cross) {
+    gaps.push({
+      kind: 2, tag: "交叉空白",
+      title: "「" + c.a.name + "」×「" + c.b.name + "」的交叉研究偏少",
+      why: "两个主题各自都有一定积累（" + c.a.count + " 篇 / " + c.b.count + " 篇），但同时涉及两者的研究只有 " + c.pair + " 篇，低于按比例预期的 " + c.expect + " 篇。把它们放进同一个研究，通常可以直接构成新问题。",
+      ev: [
+        { text: "主题 A：" + c.a.name + "（" + c.a.count + " 篇）" },
+        { text: "主题 B：" + c.b.name + "（" + c.b.count + " 篇）" },
+        { text: "同时涉及的文献：" + c.pair + " 篇（按比例预期约 " + c.expect + " 篇）" }
+      ],
+      keywords: [plan.fallback, c.a.name, c.b.name].filter(Boolean).join(" ")
+    });
+  }
+
+  const reviewShare = pct(A.reviewCount, total);
+  const rctShare = pct(A.rctCount, total);
+  if (reviewShare >= 8 && rctShare < 6) {
+    gaps.push({
+      kind: 3, tag: "干预证据缺口",
+      title: "综述已有积累，但实验 / 干预证据不足",
+      why: "检索到的文献中约 " + reviewShare + "% 是综述或元分析，但可识别的随机对照试验仅约 " + rctShare + "%。说明这个方向“知道得不少、验证得不够”，适合做干预研究或严格实验。",
+      ev: [
+        { text: "综述 / 元分析：" + A.reviewCount + " 篇（" + reviewShare + "%）" },
+        { text: "随机对照试验：" + A.rctCount + " 篇（" + rctShare + "%）" },
+        { text: "文献类型分布：" + A.types.slice(0, 4).map(t => t[0] + " " + t[1] + " 篇").join("、") }
+      ],
+      keywords: [plan.fallback, "randomized controlled trial intervention"].filter(Boolean).join(" ")
+    });
+  }
+
+  const watch = ["纵向 / 追踪设计", "交叉滞后模型", "日记法 / 经验取样", "随机对照试验", "预注册 / 开放科学", "质性研究"];
+  const mLow = A.methods.filter(m => watch.indexOf(m[0]) >= 0 && pct(m[1], total) < 8);
+  if (mLow.length >= 2) {
+    gaps.push({
+      kind: 4, tag: "方法缺口",
+      title: "因果与过程性设计偏少：" + mLow.slice(0, 2).map(m => m[0].split(" ")[0]).join("、") + "等方法用得不多",
+      why: "大多数研究集中在横断面相关设计。换设计就能做出差异化：纵向追踪回答“先发生什么”，实验 / 干预回答“是否有效”，经验取样捕捉日常波动。",
+      ev: mLow.slice(0, 5).map(m => ({ text: m[0] + "：约 " + pct(m[1], total) + "%（" + m[1] + " 篇）" }))
+        .concat([{ text: "作为对照，实验操纵出现于 " + pct((A.methods.find(x => x[0] === "实验操纵") || [0, 0])[1], total) + "% 的文献" }]),
+      keywords: [plan.fallback, "longitudinal cross-lagged diary study"].filter(Boolean).join(" ")
+    });
+  }
+
+  const popTop = A.populations.filter(p => p[1] > 0);
+  const weakPops = popTop.slice().reverse().filter(p => pct(p[1], total) < 12).slice(0, 3);
+  if (weakPops.length) {
+    gaps.push({
+      kind: 5, tag: "样本缺口",
+      title: "样本集中在特定人群，其他群体研究不足",
+      why: "文献里出现最多的样本类型是「" + (popTop[0] ? popTop[0][0] : "未识别") + "」；而 " + weakPops.map(p => "「" + p[0] + "」").join("、") + " 占比很低。换人群（尤其是中国本土样本、老年人、临床样本）本身就是可发表的研究增量。",
+      ev: popTop.slice(0, 6).map(p => ({ text: p[0] + "：" + p[1] + " 篇（" + pct(p[1], total) + "%）" })),
+      keywords: [plan.fallback, weakPops[0][0]].filter(Boolean).join(" ")
+    });
+  }
+
+  const rising = A.dirs.filter(d => d.count >= 3 && d.growth > 0 && d.recency >= 25).sort((a, b) => b.recency - a.recency).slice(0, 2);
+  const falling = A.dirs.filter(d => d.count >= 4 && d.growth < 0 && d.recency < 15).slice(0, 2);
+  if (rising.length || falling.length) {
+    const ev = [];
+    rising.forEach(d => ev.push({ text: "升温中：" + d.name + "（近三年占该方向 " + d.recency + "%，共 " + d.count + " 篇）" }));
+    falling.forEach(d => ev.push({ text: "降温中：" + d.name + "（近三年仅占 " + d.recency + "%，早期文献较多）" }));
+    gaps.push({
+      kind: 6, tag: "趋势缺口",
+      title: rising.length ? "新兴方向值得抢位：" + rising.map(d => d.name).join(" / ") : "部分方向的关注度正在下降",
+      why: rising.length
+        ? "从年份分布看，「" + rising.map(d => d.name).join("」「") + "」近三年文献占比明显上升，说明学界正在转向；较早进入的成本通常低于热点成形之后。"
+        : "部分子方向近三年文献占比明显下降，可能是方法受限；用新方法（纵向、经验取样、机器学习）重做旧问题反而有机会。",
+      ev, keywords: (rising[0] ? rising[0].name : plan.fallback)
+    });
+  }
+
+  const measureCount = (A.methods.find(m => m[0] === "问卷 / 量表编制") || [0, 0])[1];
+  if (pct(measureCount, total) < 15) {
+    gaps.push({
+      kind: 7, tag: "测量缺口",
+      title: "测量工具与本土化验证仍是薄弱环节",
+      why: "明确涉及问卷编制、量表验证或心理测量学分析的文献仅约 " + pct(measureCount, total) + "%。如果该概念在中国人群中缺少信效度证据，一篇量表汉化与验证研究就是扎实的起点。",
+      ev: [
+        { text: "涉及测量 / 量表的文献：" + measureCount + " 篇（" + pct(measureCount, total) + "%）" },
+        { text: "中国样本相关文献：" + ((A.populations.find(p => p[0] === "中国样本") || [0, 0])[1]) + " 篇" }
+      ],
+      keywords: [plan.fallback, "scale validation psychometric properties"].filter(Boolean).join(" ")
+    });
+  }
+  return gaps;
+}
+
+/* ---------- 由空白生成可直接上手的研究问题 ---------- */
+function buildQuestions(A, plan, opts) {
+  const qs = [];
+  const total = A.total || 1;
+  const base = plan.fallback || plan.primary;
+  const bigrams = A.keywords.filter(k => k[0].indexOf(" ") > 0).map(k => k[0]);
+  const unis = A.keywords.filter(k => k[0].indexOf(" ") < 0).map(k => k[0]);
+  const k1 = base || bigrams[0] || unis[0] || "研究变量";
+  const k2 = bigrams.filter(b => b !== k1)[0] || unis.filter(u => u !== k1)[0] || "结果变量";
+  const weakPop = (A.populations.slice().reverse().find(p => pct(p[1], total) < 12) || [null, 0])[0];
+  const future = A.futureSents[0];
+  const share = (label) => pct((A.methods.find(m => m[0] === label) || [0, 0])[1], total);
+
+  qs.push({
+    level: "容易上手", kind: "机制问题",
+    q: "「" + k1 + "」通过什么心理机制影响「" + k2 + "」？中介与调节路径能否被实证检验？",
+    why: "检索到的文献中，把这两个概念同时纳入模型的研究并不多；机制类问题通常用现有量表加上纵向设计即可完成。",
+    design: "研究一：横断面问卷 + 结构方程模型检验中介；研究二：三波纵向数据做交叉滞后，验证时间方向性。",
+    keywords: [base, k1, k2, "mediation moderation"].filter(Boolean).join(" ")
+  });
+  qs.push({
+    level: "容易上手", kind: "测量问题",
+    q: "能否开发或修订适合" + (weakPop || "中国") + "人群的「" + k1 + "」测量工具，并检验其信度、效度与测量不变性？",
+    why: "文献中涉及量表编制与心理测量学分析的仅约 " + share("问卷 / 量表编制") + "%，工具缺口往往意味着长期被引潜力。",
+    design: "探索性 + 验证性因素分析、内部一致性、效标关联效度，并做跨性别 / 跨年龄的测量不变性检验。",
+    keywords: [base, "scale development validation psychometric"].filter(Boolean).join(" ")
+  });
+  qs.push({
+    level: "中等", kind: "干预问题",
+    q: "针对「" + k1 + "」的干预方案，能否在" + (weakPop || "目标人群") + "中取得优于对照组的短期与追踪效果？",
+    why: "本次 " + total + " 篇文献中随机对照试验仅 " + A.rctCount + " 篇（" + pct(A.rctCount, total) + "%），干预验证仍有明显空间。",
+    design: "两臂或三臂随机对照试验：前测—后测—3 个月追踪，报告效应量与临床显著性，建议先做预注册。",
+    keywords: [base, "randomized controlled trial intervention"].filter(Boolean).join(" ")
+  });
+  if (A.coMatrix[0]) {
+    const c = A.coMatrix[0];
+    qs.push({
+      level: "中等", kind: "交叉问题",
+      q: "把「" + c.a.name + "」与「" + c.b.name + "」放进同一框架：二者是相互独立、彼此加剧，还是共享同一底层机制？",
+      why: "两个主题各有 " + c.a.count + " / " + c.b.count + " 篇文献，但交叉研究仅 " + c.pair + " 篇，属于典型的“各自成熟、交叉空白”。",
+      design: "先用文献共现与网络分析刻画关系，再用纵向数据检验方向性；或设计 2×2 实验同时操纵两个因素。",
+      keywords: [base, c.a.name, c.b.name].filter(Boolean).join(" ")
+    });
+  }
+  qs.push({
+    level: "中等", kind: "过程问题",
+    q: "「" + k1 + "」在日常生活中如何波动？哪些即时情境因素可以预测这种变化？",
+    why: "日记法 / 经验取样在文献中约 " + share("日记法 / 经验取样") + "%，日常动态过程捕捉不足，容易做出新发现。",
+    design: "14—21 天经验取样（每天 3—5 次），用多水平模型分解个体内与个体间效应。",
+    keywords: [base, "experience sampling daily diary multilevel"].filter(Boolean).join(" ")
+  });
+  qs.push({
+    level: "较高难度", kind: "神经机制问题",
+    q: "「" + k1 + "」涉及哪些神经与生理标记？这些标记能否预测行为表现或干预反应？",
+    why: "涉及脑成像 / 电生理的文献约为 " + share("脑成像 / 电生理") + "%，机制层面可挖掘空间大，但需要设备与合作资源。",
+    design: "fMRI / EEG 或 HRV、皮质醇等生理指标 + 行为任务，检验标记—行为关联并建立预测模型。",
+    keywords: [base, "neural mechanisms fMRI ERP physiological"].filter(Boolean).join(" ")
+  });
+  qs.push({
+    level: "较高难度", kind: "文化 / 发展问题",
+    q: "「" + k1 + "」在中国文化背景与不同年龄阶段中是否呈现不同形态？以西方大学生为主的结论能否推广？",
+    why: "本次检索中中国样本相关文献 " + ((A.populations.find(p => p[0] === "中国样本") || [0, 0])[1]) + " 篇，大学生样本占比偏高，跨文化与全生命周期证据不足，而这正是当前期刊鼓励的方向。",
+    design: "多群体比较设计 + 测量不变性检验；或与境外样本合作做跨文化对照。",
+    keywords: [base, "cross-cultural China measurement invariance lifespan"].filter(Boolean).join(" ")
+  });
+  if (future) {
+    qs.push({
+      level: "容易上手", kind: "文献指出的缺口",
+      q: "文献明确提出：" + future.text.slice(0, 150) + "（来源：" + future.work.title.slice(0, 56) + "）",
+      why: "这句话来自被引 " + (future.work.cites || 0) + " 次的文献摘要，是原作者本人写下的研究展望，可以直接作为选题依据。",
+      design: "围绕该文献提出的方向设计一个可操作的验证研究，并在引言中明确引用它、说明你的推进之处。",
+      keywords: [base].filter(Boolean).join(" ")
+    });
+  }
+  return qs;
+}
+/* =========================== 5. 界面渲染 =============================== */
+const STATE = {
+  works: [], classics: [], analysis: null, plan: null, opts: null,
+  cleanWorks: [], view: "overview", sort: "relevance", dirFilter: null, demo: false, total: 0
+};
+
+const TYPE_LABEL = {
+  article: "期刊论文", review: "综述 / 元分析", book: "专著", "book-chapter": "书中章节",
+  preprint: "预印本", "proceedings-article": "会议论文", dissertation: "学位论文",
+  dataset: "数据集", report: "报告", paratext: "其他"
+};
+
+function statusHTML(kind, html) {
+  const bar = $("#statusBar");
+  if (!html) { bar.className = "status hidden"; bar.innerHTML = ""; return; }
+  bar.className = "status" + (kind ? " " + kind : "");
+  bar.innerHTML = html;
+}
+function connBadge(cls, text) {
+  const b = $("#connBadge");
+  b.className = "conn " + (cls || "");
+  b.innerHTML = '<span class="dot"></span>' + esc(text);
+}
+function setLoading(msg) {
+  statusHTML("", '<span class="loader"><i></i><i></i><i></i></span>' + esc(msg));
+  connBadge("load", "检索中…");
+}
+
+function authorLine(w, max) {
+  const a = w.authors || [];
+  if (!a.length) return "作者信息缺失";
+  const n = max || 4;
+  return a.slice(0, n).join(", ") + (a.length > n ? " 等（共 " + a.length + " 位）" : "");
+}
+
+/* 各类跳转链接：一个词直达原文与多个文献平台 */
+function linksFor(w, plan) {
+  const L = [];
+  const t = w.title || "";
+  const zh = (plan && (plan.termZh || plan.input)) || t;
+  if (w.doi) L.push({ label: "原文 DOI", href: "https://doi.org/" + w.doi, cls: "lnkd" });
+  if (w.oaUrl) L.push({ label: "OpenAlex 记录", href: w.oaUrl });
+  L.push({ label: "谷歌学术", href: "https://scholar.google.com/scholar?q=" + enc(t) });
+  L.push({ label: "知网", href: "https://kns.cnki.net/kns8s/defaultresult/index?kw=" + enc(zh) });
+  L.push({ label: "百度学术", href: "https://xueshu.baidu.com/s?wd=" + enc(t) });
+  L.push({ label: "PubMed", href: "https://pubmed.ncbi.nlm.nih.gov/?term=" + enc(t) });
+  if (w.oaPdf) L.push({ label: "免费全文", href: w.oaPdf, cls: "lnkd" });
+  return L;
+}
+
+function tagBits(w) {
+  const bits = [];
+  if (w.year) bits.push('<span class="pill">' + w.year + '</span>');
+  if (w.journal && w.journal !== "—") bits.push('<span class="pill">' + esc(w.journal) + '</span>');
+  if (w.cites) bits.push('<span class="pill p-amber">被引 ' + prettyNum(w.cites) + '</span>');
+  const tl = TYPE_LABEL[w.type] || w.type;
+  if (tl) bits.push('<span class="pill' + (w.type === "review" ? " p-teal" : "") + '">' + esc(tl) + '</span>');
+  if (w.isOA) bits.push('<span class="pill p-teal">开放获取</span>');
+  const pt = w.primaryTopic || {};
+  if (pt.name) bits.push('<span class="pill p-accent">' + esc(pt.name) + '</span>');
+  if (pt.sub && pt.sub !== pt.name) bits.push('<span class="pill p-gray">' + esc(pt.sub) + '</span>');
+  if (w.srcTag === "离线示例") bits.push('<span class="pill p-rose">离线示例</span>');
+  return bits.join("");
+}
+
+function workCard(w, i, listId) {
+  const links = linksFor(w, STATE.plan).map(l =>
+    '<a class="lnk ' + (l.cls || "") + '" href="' + esc(l.href) + '" target="_blank" rel="noopener noreferrer">' + esc(l.label) + '</a>').join("");
+  const fav = isFav(w);
+  return '<article class="card work">'
+    + '<h3 class="t"><a href="' + esc(w.doi ? "https://doi.org/" + w.doi : (w.oaUrl || "#")) + '" target="_blank" rel="noopener noreferrer" data-open="' + listId + ':' + i + '">' + esc(w.title) + '</a></h3>'
+    + '<div class="meta"><span class="au">' + esc(authorLine(w)) + '</span></div>'
+    + '<div class="tags">' + tagBits(w) + '</div>'
+    + (w.abstract ? '<div class="ab clamp">' + esc(w.abstract) + '</div>' : '<div class="ab">（该来源未提供摘要；点开"原文 DOI / 免费全文"查看）</div>')
+    + '<div class="acts">' + links
+    + (w.abstract ? '<span class="linkmore" data-expand="1">展开摘要</span>' : "")
+    + '<button type="button" class="lnk fav' + (fav ? " on" : "") + '" data-fav="' + listId + ':' + i + '">' + (fav ? "已收藏" : "收藏") + '</button>'
+    + '<button type="button" class="lnk" data-detail="' + listId + ':' + i + '">详情</button>'
+    + '</div></article>';
+}
+
+/* ---------- 总览 ---------- */
+function renderOverview() {
+  const A = STATE.analysis, plan = STATE.plan, opts = STATE.opts;
+  if (!A || !A.total) { $("#panel-overview").innerHTML = ""; return; }
+  const K = [
+    { v: STATE.total || A.total, k: "本次检索命中文献", sub: A.total !== (STATE.total || A.total) ? "按条件筛选后纳入分析 " + A.total + " 篇" : "纳入分析 " + A.total + " 篇" },
+    { v: A.yspan[0] + "–" + A.yspan[1], k: "年份跨度", sub: "中位年份 " + A.medianYear },
+    { v: A.recentShare + "%", k: "近三年文献占比", sub: "代表该方向当前热度" },
+    { v: A.dirs.length, k: "识别出的研究方向", sub: "按学科子领域自动归类" },
+    { v: A.avgCites, k: "篇均被引", sub: "高被引越多，经典积累越厚" },
+    { v: A.openShare + "%", k: "开放获取比例", sub: "越高越容易拿到全文" }
+  ].map(x => '<div class="card kpi"><div class="v">' + esc(x.v) + '</div><div class="k">' + esc(x.k) + '</div><div class="sub">' + esc(x.sub) + '</div></div>').join("");
+
+  const maxY = Math.max.apply(null, A.yearBins.map(b => b.n).concat([1]));
+  const recentCut = (opts.toYear || nowYear) - 2;
+  const chart = '<div class="trend">' + A.yearBins.map(b =>
+    '<i class="' + (b.y >= recentCut ? "on" : "") + '" style="height:' + Math.max(3, Math.round(b.n / maxY * 100)) + '%" title="' + b.y + ' 年：' + b.n + ' 篇"></i>').join("") + '</div>'
+    + '<div class="yr"><span>' + A.yspan[0] + '</span><span>浅色为较早年份，深色为近三年</span><span>' + A.yspan[1] + '</span></div>';
+
+  const dirBars = A.dirs.slice(0, 8).map(d =>
+    '<div class="barrow"><div><div class="nm">' + esc(d.name) + '<em>' + d.count + ' 篇 · 近三年 ' + d.recency + '%</em></div>'
+    + '<div class="bar"><span style="width:' + Math.max(4, d.share) + '%"></span></div></div>'
+    + '<div class="ct">' + d.share + '%</div></div>').join("");
+
+  const methodBars = A.methods.filter(m => m[1] > 0).slice(0, 10).map(m =>
+    '<div class="barrow"><div><div class="nm">' + esc(m[0]) + '<em>' + m[1] + ' 篇</em></div>'
+    + '<div class="bar t"><span style="width:' + Math.max(3, pct(m[1], A.total)) + '%"></span></div></div>'
+    + '<div class="ct">' + pct(m[1], A.total) + '%</div></div>').join("");
+
+  const popBars = A.populations.filter(p => p[1] > 0).map(p =>
+    '<div class="barrow"><div><div class="nm">' + esc(p[0]) + '<em>' + p[1] + ' 篇</em></div>'
+    + '<div class="bar t"><span style="width:' + Math.max(3, pct(p[1], A.total)) + '%"></span></div></div>'
+    + '<div class="ct">' + pct(p[1], A.total) + '%</div></div>').join("");
+
+  const kwChips = A.keywords.slice(0, 22).map(k =>
+    '<button type="button" class="chip" data-search="' + esc(k[0]) + '">' + esc(k[0]) + ' <span class="muted">' + k[1] + '</span></button>').join("");
+  const jrList = A.journals.slice(0, 6).map(j => '<div class="barrow"><div class="nm">' + esc(j[0]) + '</div><div class="ct">' + j[1] + ' 篇</div></div>').join("");
+  const auList = A.authors.slice(0, 8).map(a => '<div class="barrow"><div class="nm">' + esc(a[0]) + '</div><div class="ct">' + a[1] + ' 篇</div></div>').join("");
+
+  const queryNote = '<div class="card" style="padding:16px 18px">'
+    + '<div class="sect-h"><h2>检索式是怎么构成的</h2><span class="desc">中文问题自动翻译成国际文献库可识别的英文检索词</span></div>'
+    + '<div class="small" style="line-height:2">'
+    + '<div>原始输入：<b>' + esc(plan.input) + '</b></div>'
+    + '<div>识别到的专业术语：' + (plan.termZh ? '<b>' + esc(plan.termZh) + '</b>' : '<span class="muted">未命中术语库，按原词检索</span>') + '</div>'
+    + '<div>实际检索式：<code style="background:#f4f6fb;padding:2px 7px;border-radius:6px">' + esc(plan.primary) + '</code></div>'
+    + (plan.mods.length ? '<div>研究问题类型：<b>' + esc(plan.modZh) + '</b> → 用于生成选题建议</div>' : '')
+    + '<div>数据源：<b>' + (opts.source === "crossref" ? "Crossref" : "OpenAlex") + '</b>，年份 ' + opts.fromYear + '–' + opts.toYear + (opts.onlyOA ? "，仅开放获取" : "") + (opts.onlyReview ? "，仅综述" : "") + '</div>'
+    + '</div></div>';
+
+  $("#panel-overview").innerHTML =
+    '<div class="grid g3 sect">' + K + '</div>'
+    + '<div class="grid g2 sect">'
+      + '<div class="card" style="padding:16px 18px"><div class="sect-h"><h2>年份分布</h2><span class="desc">近三年 ' + A.recentShare + '% 的文献属于新近发表</span></div>' + chart + '</div>'
+      + '<div class="card" style="padding:16px 18px"><div class="sect-h"><h2>研究方向占比</h2><span class="desc">共 ' + A.dirs.length + ' 个方向</span></div>' + dirBars + '</div>'
+    + '</div>'
+    + '<div class="grid g2 sect">'
+      + '<div class="card" style="padding:16px 18px"><div class="sect-h"><h2>研究方法结构</h2><span class="desc">看看这个领域"习惯怎么做研究"</span></div>' + (methodBars || '<div class="muted small">摘要信息不足，无法识别方法</div>') + '</div>'
+      + '<div class="card" style="padding:16px 18px"><div class="sect-h"><h2>样本人群构成</h2><span class="desc">换人群往往是低成本的创新点</span></div>' + (popBars || '<div class="muted small">摘要信息不足，无法识别样本</div>') + '</div>'
+    + '</div>'
+    + '<div class="card sect" style="padding:16px 18px"><div class="sect-h"><h2>高频关键词</h2><span class="desc">点击任一关键词可直接发起新检索</span></div><div class="kw">' + (kwChips || '<span class="muted small">暂无</span>') + '</div></div>'
+    + '<div class="grid g2 sect">'
+      + '<div class="card" style="padding:16px 18px"><div class="sect-h"><h2>主要发表期刊</h2></div>' + (jrList || '<span class="muted small">暂无</span>') + '</div>'
+      + '<div class="card" style="padding:16px 18px"><div class="sect-h"><h2>高产作者</h2><span class="desc">可作为追踪阅读的入口</span></div>' + (auList || '<span class="muted small">暂无</span>') + '</div>'
+    + '</div>'
+    + queryNote
+    + '<div class="grid g3 sect">'
+      + '<button type="button" class="card kpi" data-goto="works" style="text-align:left;cursor:pointer"><div class="v" style="font-size:17px">查看全部文献 →</div><div class="k">带 DOI、摘要、多平台跳转与导出</div></button>'
+      + '<button type="button" class="card kpi" data-goto="directions" style="text-align:left;cursor:pointer"><div class="v" style="font-size:17px">按方向分类浏览 →</div><div class="k">每个方向的代表作、期刊与趋势</div></button>'
+      + '<button type="button" class="card kpi" data-goto="gaps" style="text-align:left;cursor:pointer"><div class="v" style="font-size:17px">我还能研究什么 →</div><div class="k">基于空白证据生成的选题清单</div></button>'
+    + '</div>'
+    + '<div class="grid g3 sect">'
+      + '<button type="button" class="card kpi" data-copy="1" style="text-align:left;cursor:pointer"><div class="v" style="font-size:15px">🔗 复制分享链接</div><div class="k">别人打开这个链接，就能看到同一次检索结果</div></button>'
+    + '</div>';
+}
+
+/* ---------- 文献列表 ---------- */
+function visibleWorks() {
+  let list = STATE.works.slice();
+  if (STATE.dirFilter) list = list.filter(w => dirKeyOf(w) === STATE.dirFilter);
+  if (STATE.sort === "cites") list.sort((a, b) => (b.cites || 0) - (a.cites || 0));
+  else if (STATE.sort === "year") list.sort((a, b) => (b.year || 0) - (a.year || 0));
+  else if (STATE.sort === "oldest") list.sort((a, b) => (a.year || 9999) - (b.year || 9999));
+  return list;
+}
+
+function renderWorks() {
+  const list = visibleWorks();
+  const A = STATE.analysis;
+  const dirs = A ? A.dirs : [];
+  const chips = '<button type="button" class="chip' + (!STATE.dirFilter ? ' ' : '') + '" style="' + (!STATE.dirFilter ? "border-color:#4f5bd5;color:#4f5bd5;background:#f4f5ff" : "") + '" data-dir="">全部方向 (' + STATE.works.length + ')</button>'
+    + dirs.map(d => '<button type="button" class="chip" style="' + (STATE.dirFilter === d.name ? "border-color:#4f5bd5;color:#4f5bd5;background:#f4f5ff" : "") + '" data-dir="' + esc(d.name) + '">' + esc(d.name) + ' (' + d.count + ')</button>').join("");
+
+  const toolbar = '<div class="card sect" style="padding:14px 16px">'
+    + '<div class="examples" style="margin-top:0"><span class="lab">按方向筛选：</span>' + chips + '</div>'
+    + '<div class="advrow" style="margin-top:12px">'
+    + '<label>排序 <select id="sortSel">'
+      + '<option value="relevance"' + (STATE.sort === "relevance" ? " selected" : "") + '>相关度（推荐）</option>'
+      + '<option value="cites"' + (STATE.sort === "cites" ? " selected" : "") + '>被引次数从高到低</option>'
+      + '<option value="year"' + (STATE.sort === "year" ? " selected" : "") + '>最新发表优先</option>'
+      + '<option value="oldest"' + (STATE.sort === "oldest" ? " selected" : "") + '>最早发表优先</option>'
+    + '</select></label>'
+    + '<span class="muted small">当前显示 ' + list.length + ' 篇</span>'
+    + '<span style="flex:1"></span>'
+    + '<button type="button" class="btn ghost mini" data-export="csv">导出 CSV（Excel 可开）</button>'
+    + '<button type="button" class="btn ghost mini" data-export="bib">导出 BibTeX</button>'
+    + '<button type="button" class="btn ghost mini" data-export="ris">导出 RIS（EndNote）</button>'
+    + '<button type="button" class="btn ghost mini" data-export="md">导出阅读清单</button>'
+    + '</div></div>';
+
+  const body = list.length
+    ? list.map((w, i) => workCard(w, STATE.works.indexOf(w), "works")).join("")
+    : '<div class="card empty"><div class="big">∅</div>该筛选条件下没有文献，试试取消方向筛选或放宽年份。</div>';
+  $("#panel-works").innerHTML = toolbar + body;
+}
+
+/* ---------- 研究方向 ---------- */
+function renderDirections() {
+  const A = STATE.analysis;
+  if (!A || !A.dirs.length) { $("#panel-directions").innerHTML = '<div class="card empty">暂无足够文献用于方向归类。</div>'; return; }
+  const cards = A.dirs.map(d => {
+    const maxY = Math.max.apply(null, d.trend.map(t => t.n).concat([1]));
+    const spark = '<div class="trend" style="height:34px">' + d.trend.map(t =>
+      '<i style="height:' + Math.max(4, Math.round(t.n / maxY * 100)) + '%" title="' + t.y + '：' + t.n + ' 篇"></i>').join("") + '</div>';
+    const tops = d.topWorks.map(w => '<div>· <a href="' + esc(w.doi ? "https://doi.org/" + w.doi : (w.oaUrl || "#")) + '" target="_blank" rel="noopener noreferrer">' + esc(w.title.slice(0, 82)) + (w.title.length > 82 ? "…" : "") + '</a> <span class="muted">(' + (w.year || "—") + '，被引 ' + prettyNum(w.cites || 0) + ')</span></div>').join("");
+    return '<article class="card dir">'
+      + '<div class="hd"><h3>' + esc(d.name) + '</h3><span class="pill p-accent">' + d.share + '%</span></div>'
+      + '<div class="kv"><span>文献 <b>' + d.count + '</b> 篇</span><span>近三年 <b>' + d.recency + '%</b></span>'
+      + '<span>篇均被引 <b>' + d.avgCites + '</b></span><span>中位年份 <b>' + d.medianYear + '</b></span>'
+      + (d.field ? '<span>上级领域 <b>' + esc(d.field) + '</b></span>' : '') + '</div>'
+      + spark
+      + '<div class="top"><div class="lb">代表作</div>' + (tops || '<span class="muted small">暂无</span>') + '</div>'
+      + (d.journals.length ? '<div class="top"><div class="lb">主要期刊</div><div class="small">' + d.journals.map(j => esc(j[0]) + '（' + j[1] + '）').join("　") + '</div></div>' : '')
+      + (d.keywords.length ? '<div class="kw">' + d.keywords.slice(0, 6).map(k => '<button type="button" class="chip" data-search="' + esc(k[0]) + '">' + esc(k[0]) + '</button>').join("") + '</div>' : '')
+      + '<div class="acts"><button type="button" class="btn ghost mini" data-dir="' + esc(d.name) + '" data-jump="works">只看这个方向的 ' + d.count + ' 篇文献</button>'
+      + '<button type="button" class="btn ghost mini" data-search="' + esc(d.name) + '">以此方向发起新检索</button></div>'
+      + '</article>';
+  }).join("");
+  $("#panel-directions").innerHTML =
+    '<div class="note sect">分类方式：依据文献数据库给每篇论文标注的<b>学科主题</b>（主题 → 子领域 → 领域 → 大学科）自动归组。'
+    + '每张卡片下方的柱形是<strong>该方向的年度发表量</strong>；「近三年占比」越高，说明这个方向当下越活跃。</div>'
+    + '<div class="grid g2">' + cards + '</div>';
+}
+
+/* ---------- 可研究的问题 ---------- */
+function renderGaps() {
+  const A = STATE.analysis;
+  if (!A || !A.total) { $("#panel-gaps").innerHTML = '<div class="card empty">先检索一次，才能生成选题建议。</div>'; return; }
+  const gapCards = A.gaps.map(g =>
+    '<article class="card gap k' + (g.kind <= 5 ? g.kind : (g.kind === 6 ? 5 : 3)) + '">'
+    + '<h3>' + esc(g.title) + '<span class="pill p-rose">' + esc(g.tag) + '</span></h3>'
+    + '<p class="why">' + esc(g.why) + '</p>'
+    + '<ul class="ev">' + g.ev.map(e => e.work
+        ? '<li>“' + esc(e.text) + '”<div class="src">— 《' + esc(e.work.title.slice(0, 90)) + '》(' + (e.work.year || "—") + '，被引 ' + prettyNum(e.work.cites || 0) + ')</div></li>'
+        : '<li>' + esc(e.text) + '</li>').join("") + '</ul>'
+    + (g.keywords ? '<div class="prop"><span class="lbl">可以直接这样检索</span><button type="button" class="chip" data-search="' + esc(g.keywords) + '">' + esc(g.keywords) + '</button></div>' : '')
+    + '</article>').join("");
+
+  const qCards = A.questions.map(q =>
+    '<article class="card gap k2"><h3>' + esc(q.kind) + '<span class="pill ' + (q.level === "容易上手" ? "p-teal" : q.level === "中等" ? "p-amber" : "p-rose") + '">' + esc(q.level) + '</span></h3>'
+    + '<div class="why" style="font-size:14.5px;color:var(--ink);font-weight:550">' + esc(q.q) + '</div>'
+    + '<div class="prop"><span class="lbl">为什么值得做</span>' + esc(q.why) + '</div>'
+    + '<div class="prop"><span class="lbl">建议研究设计</span>' + esc(q.design) + '</div>'
+    + '<div class="prop"><span class="lbl">检索关键词（点击直接搜索文献）</span><button type="button" class="chip" data-search="' + esc(q.keywords) + '">' + esc(q.keywords) + '</button></div>'
+    + '</article>').join("");
+
+  $("#panel-gaps").innerHTML =
+    '<div class="note sect"><b>这部分怎么来的？</b>系统做了四件事：① 从摘要中抽取作者亲口写下的"未来研究 / 仍不清楚"句子；'
+    + '② 统计各主题的共现情况，找出"各自成熟、交叉稀疏"的组合；③ 对比综述、实验、纵向、随机对照等方法的使用比例，定位设计缺口；'
+    + '④ 统计样本人群分布，找出研究不足的群体。所有结论都给出对应的数字或原文句子，你可以自行核对，再决定做哪一个。</div>'
+    + (gapCards ? '<div class="sect-h"><h2>这个领域的空白点（' + A.gaps.length + ' 个）</h2><span class="desc">每条都附证据</span></div>' + gapCards : '<div class="card empty">文献摘要不足，暂时无法识别空白点，建议放宽检索条件。</div>')
+    + '<div class="sect-h" style="margin-top:28px"><h2>基于以上空白，可以直接上手的研究问题（' + A.questions.length + ' 个）</h2><span class="desc">含研究设计与检索入口</span></div>'
+    + qCards
+    + '<div class="note sect" style="margin-top:16px"><b>诚实说明：</b>以上是<b>文献计量 + 摘要文本挖掘</b>得到的线索，不是真正读过论文的评审意见。'
+    + '它的价值在于帮你快速看到"哪里热、哪里空、哪里方法单薄"；最终选题前，请务必点开原文核对，尤其确认最近 1–2 年的新文献是否已经填补了该空白。</div>';
+}
+
+/* ---------- 必读经典 ---------- */
+function renderClassics() {
+  const list = STATE.classics;
+  if (!list.length) {
+    $("#panel-classics").innerHTML = '<div class="card empty">暂未获取到经典文献排行（可能网络受限）。</div>';
+    return;
+  }
+  const rows = list.map((w, i) =>
+    '<tr><td class="num">' + (i + 1) + '</td>'
+    + '<td class="ttl"><a href="' + esc(w.doi ? "https://doi.org/" + w.doi : (w.oaUrl || "#")) + '" target="_blank" rel="noopener noreferrer">' + esc(w.title) + '</a>'
+    + '<div class="small muted">' + esc(authorLine(w, 3)) + '</div></td>'
+    + '<td class="num">' + (w.year || "—") + '</td>'
+    + '<td class="small">' + esc((w.journal || "—").slice(0, 46)) + '</td>'
+    + '<td class="num">' + prettyNum(w.cites || 0) + '</td>'
+    + '<td>' + linksFor(w, STATE.plan).filter(l => /DOI|学术|知网|PubMed/.test(l.label)).slice(0, 3)
+        .map(l => '<a class="lnk" href="' + esc(l.href) + '" target="_blank" rel="noopener noreferrer">' + esc(l.label) + '</a>').join(" ") + '</td></tr>').join("");
+  $("#panel-classics").innerHTML =
+    '<div class="note sect">按<b>被引次数</b>排序的奠基性文献。读经典能最快建立领域坐标系，也方便在写引言时找到"源头文献"。</div>'
+    + '<div class="card" style="padding:6px 10px 10px;overflow:auto"><table class="tbl"><thead><tr>'
+    + '<th>#</th><th>标题 / 作者</th><th>年份</th><th>期刊</th><th>被引</th><th>跳转</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+    + '<div class="sect" style="margin-top:14px"><button type="button" class="btn ghost mini" data-export="csv">导出这份经典清单（CSV）</button></div>';
+}
+
+/* ---------- 收藏 ---------- */
+function renderSaved() {
+  const list = loadFav();
+  $("#nSaved").textContent = list.length ? " " + list.length : "";
+  if (!list.length) {
+    $("#panel-saved").innerHTML = '<div class="card empty"><div class="big">☆</div>还没有收藏。在文献列表里点「收藏」，就会保存到这里（存在你自己的浏览器里，不会上传）。</div>';
+    return;
+  }
+  $("#panel-saved").innerHTML =
+    '<div class="card sect" style="padding:14px 16px"><div class="examples" style="margin-top:0">'
+    + '<span class="lab">共 ' + list.length + ' 篇</span><span style="flex:1"></span>'
+    + '<button type="button" class="btn ghost mini" data-export="csv">导出 CSV</button>'
+    + '<button type="button" class="btn ghost mini" data-export="bib">导出 BibTeX</button>'
+    + '<button type="button" class="btn ghost mini" data-export="ris">导出 RIS</button>'
+    + '<button type="button" class="btn ghost mini" data-clearfav="1">清空收藏</button>'
+    + '</div></div>'
+    + list.map((w, i) => workCard(w, i, "saved")).join("");
+}
+
+/* ---------- 导出 ---------- */
+function download(name, text, mime) {
+  const blob = new Blob([text], { type: (mime || "text/plain") + ";charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 800);
+}
+function csvCell(v) {
+  const s = String(v == null ? "" : v).replace(/"/g, '""').replace(/\r?\n/g, " ");
+  return '"' + s + '"';
+}
+function exportCSV(list, tag) {
+  const head = ["标题", "作者", "年份", "期刊", "被引次数", "文献类型", "是否开放获取", "DOI", "链接", "主题方向", "摘要"];
+  const rows = list.map(w => [
+    w.title, (w.authors || []).join("; "), w.year || "", w.journal || "", w.cites || 0,
+    TYPE_LABEL[w.type] || w.type || "", w.isOA ? "是" : "否", w.doi || "",
+    w.doi ? "https://doi.org/" + w.doi : (w.oaUrl || ""), dirKeyOf(w), w.abstract || ""
+  ].map(csvCell).join(","));
+  download("心理学文献_" + tag + "_" + new Date().toISOString().slice(0, 10) + ".csv",
+    "\uFEFF" + head.map(csvCell).join(",") + "\r\n" + rows.join("\r\n"), "text/csv");
+}
+function bibKey(w, i) {
+  const a = (w.authors && w.authors[0]) || "anon";
+  return (a.split(/\s+/).pop() || "anon").replace(/[^A-Za-z]/g, "") + (w.year || "") + "_" + (i + 1);
+}
+function exportBib(list, tag) {
+  const body = list.map((w, i) =>
+    "@article{" + bibKey(w, i) + ",\n"
+    + "  title   = {" + (w.title || "") + "},\n"
+    + "  author  = {" + (w.authors || []).join(" and ") + "},\n"
+    + "  journal = {" + (w.journal || "") + "},\n"
+    + "  year    = {" + (w.year || "") + "},\n"
+    + (w.doi ? "  doi     = {" + w.doi + "},\n" : "")
+    + "  note    = {被引 " + (w.cites || 0) + "}" + "\n}\n").join("\n");
+  download("心理学文献_" + tag + ".bib", body, "text/plain");
+}
+function exportRIS(list, tag) {
+  const body = list.map(w =>
+    "TY  - JOUR\n" + (w.authors || []).map(a => "AU  - " + a + "\n").join("")
+    + "TI  - " + (w.title || "") + "\n"
+    + "JO  - " + (w.journal || "") + "\n"
+    + "PY  - " + (w.year || "") + "\n"
+    + (w.doi ? "DO  - " + w.doi + "\n" : "")
+    + (w.abstract ? "AB  - " + w.abstract.replace(/\s+/g, " ") + "\n" : "")
+    + "ER  - \n\n").join("");
+  download("心理学文献_" + tag + ".ris", body, "text/plain");
+}
+function exportMD(list, tag) {
+  const plan = STATE.plan || {};
+  const A = STATE.analysis || {};
+  let s = "# 心理学文献阅读清单\n\n";
+  s += "- 检索问题：" + (plan.input || "") + "\n- 实际检索式：" + (plan.primary || "") + "\n";
+  s += "- 数据源：" + ((STATE.opts && STATE.opts.source) || "openalex") + "，生成时间 " + new Date().toLocaleString("zh-CN") + "\n";
+  if (A.dirs && A.dirs.length) s += "- 研究方向：" + A.dirs.slice(0, 6).map(d => d.name + "(" + d.count + ")").join("、") + "\n";
+  s += "\n## 文献清单\n\n";
+  list.forEach((w, i) => {
+    s += (i + 1) + ". **" + (w.title || "") + "**\n";
+    s += "   - 作者：" + (w.authors || []).join(", ") + "\n";
+    s += "   - 来源：" + (w.journal || "—") + "，" + (w.year || "—") + "，被引 " + (w.cites || 0) + "\n";
+    s += "   - 方向：" + dirKeyOf(w) + "\n";
+    if (w.doi) s += "   - 链接：https://doi.org/" + w.doi + "\n";
+  });
+  if (A.questions && A.questions.length) {
+    s += "\n## 可研究的问题\n\n";
+    A.questions.forEach((q, i) => { s += (i + 1) + ". **" + q.q + "**\n   - 设计建议：" + q.design + "\n   - 检索词：" + q.keywords + "\n"; });
+  }
+  download("心理学阅读清单_" + tag + ".md", s, "text/markdown");
+}
+
+/* ---------- 详情抽屉 ---------- */
+function findWork(ref) {
+  const idx = ref.indexOf(":");
+  const listId = ref.slice(0, idx), i = parseInt(ref.slice(idx + 1), 10);
+  if (listId === "saved") return loadFav()[i];
+  if (listId === "works") return STATE.works[i];
+  if (listId === "classics") return STATE.classics[i];
+  return null;
+}
+function openDetail(w) {
+  if (!w) return;
+  const links = linksFor(w, STATE.plan).map(l =>
+    '<a class="lnk ' + (l.cls || "") + '" href="' + esc(l.href) + '" target="_blank" rel="noopener noreferrer">' + esc(l.label) + '</a>').join(" ");
+  const topics = (w.topics || []).map(t => '<span class="pill p-accent">' + esc(t.name) + '</span>').join(" ");
+  const root = $("#modalRoot");
+  root.innerHTML = '<div class="mask" data-close-modal="1"><div class="drawer" data-stop="1">'
+    + '<button class="close" type="button" data-close-modal="1">✕</button>'
+    + '<h2>' + esc(w.title) + '</h2>'
+    + '<div class="tags">' + tagBits(w) + '</div>'
+    + '<div class="sec"><h4>作者</h4><div class="small">' + esc(authorLine(w, 20)) + '</div></div>'
+    + (w.publisher ? '<div class="sec"><h4>出版机构</h4><div class="small">' + esc(w.publisher) + '</div></div>' : '')
+    + '<div class="sec"><h4>主题标签</h4><div class="kw">' + (topics || '<span class="muted small">无</span>') + '</div></div>'
+    + '<div class="sec"><h4>摘要</h4><div class="abs">' + (w.abstract ? esc(w.abstract) : "该数据源未提供摘要。点击下方链接前往原文或免费全文。") + '</div></div>'
+    + '<div class="sec"><h4>跳转与获取全文</h4><div class="acts">' + links + '</div></div>'
+    + '<div class="sec"><h4>基于该文献继续探索</h4><div class="acts">'
+      + '<button type="button" class="btn ghost mini" data-search="' + esc((w.topics && w.topics[0] && w.topics[0].name) || w.title) + '">检索同主题文献</button>'
+      + '<button type="button" class="btn ghost mini" data-fav-detail="' + esc(favKey(w)) + '">' + (isFav(w) ? "取消收藏" : "加入收藏") + '</button>'
+    + '</div></div>'
+    + '</div></div>';
+}
+function closeModal() { $("#modalRoot").innerHTML = ""; }
+
+/* =========================== 6. 交互与主流程 =========================== */
+function readOpts() {
+  return {
+    fromYear: parseInt($("#fromYear").value, 10) || 0,
+    toYear: parseInt($("#toYear").value, 10) || nowYear,
+    minCite: parseInt($("#minCite").value, 10) || 0,
+    onlyOA: $("#onlyOA").checked,
+    onlyReview: $("#onlyReview").checked,
+    source: $("#source").value
+  };
+}
+function switchTab(name) {
+  STATE.view = name;
+  $$("#tabs .tab").forEach(b => b.classList.toggle("active", b.dataset.tab === name));
+  ["overview", "works", "directions", "gaps", "classics", "saved"].forEach(k =>
+    $("#panel-" + k).classList.toggle("hidden", k !== name));
+  window.scrollTo({ top: Math.max(0, $("#tabs").offsetTop - 80), behavior: "smooth" });
+}
+function renderAll() {
+  renderOverview(); renderWorks(); renderDirections(); renderGaps(); renderClassics(); renderSaved();
+  $("#nWorks").textContent = STATE.works.length ? " " + STATE.works.length : "";
+}
+
+/* 中文词未命中术语库时，给出相近术语建议 */
+function suggestTerms(input) {
+  const chars = uniq(input.split("").filter(c => /[\u4e00-\u9fa5]/.test(c)));
+  const scored = GLOSSARY.map(g => {
+    let s = 0;
+    for (const c of chars) if (g[0].indexOf(c) >= 0) s += 1;
+    if (g[0].length >= 2) for (let i = 0; i < input.length - 1; i++) if (g[0].indexOf(input.slice(i, i + 2)) >= 0) s += 2;
+    return { zh: g[0], en: g[1], s };
+  }).filter(x => x.s > 0).sort((a, b) => b.s - a.s || a.zh.length - b.zh.length).slice(0, 8);
+  return scored;
+}
+
+function welcome() {
+  const hist = loadHist();
+  const steps = [
+    { n: "1", t: "输入你的研究问题或名词", d: "中文、英文都可以。中文会自动翻译成国际文献库的检索词，例如「青少年社交焦虑的干预」会转成 social anxiety adolescents intervention。" },
+    { n: "2", t: "拿到按方向归类的文献", d: "系统把命中的文献按学科主题自动分组，每组给出代表作、主要期刊、年度趋势，方便你判断哪条路已经拥挤、哪条路还空着。" },
+    { n: "3", t: "看到还能研究什么", d: "从摘要里抽取作者亲口写的「未来研究应……」，再结合主题共现、方法比例、样本人群分布，生成带证据的选题清单和研究设计建议。" }
+  ];
+  $("#panel-overview").innerHTML =
+    '<div class="card sect" style="padding:22px 24px">'
+    + '<h2 style="margin:0 0 6px;font-size:19px">三步找到你的下一个研究问题</h2>'
+    + '<p class="muted small" style="margin:0 0 16px">专攻心理学：术语库、研究方向归类、研究空白挖掘都是按心理学科研习惯设计的。</p>'
+    + steps.map(s => '<div style="display:flex;gap:14px;padding:11px 0;border-top:1px solid var(--line-2)">'
+        + '<div style="flex:0 0 30px;height:30px;border-radius:9px;background:linear-gradient(140deg,#4f5bd5,#7c5cff);color:#fff;display:grid;place-items:center;font-weight:650;font-size:14px">' + s.n + '</div>'
+        + '<div><div style="font-weight:600">' + s.t + '</div><div class="small muted">' + s.d + '</div></div></div>').join("")
+    + '</div>'
+    + '<div class="note sect">建议先从顶部的示例开始点一次，感受完整流程；也可以直接输入你自己的研究问题。'
+    + '本工具的数据来自公开文献数据库（OpenAlex / Crossref），所有跳转链接直达原文、知网、谷歌学术或 PubMed。</div>'
+    + (hist.length ? '<div class="card sect" style="padding:14px 16px"><div class="examples" style="margin-top:0"><span class="lab">最近检索：</span>'
+        + hist.map(h => '<button type="button" class="chip" data-search="' + esc(h) + '">' + esc(h) + '</button>').join("") + '</div></div>' : "");
+}
+
+/* ---------- 主检索流程 ---------- */
+function loadDemo(input) {
+  const plan = buildQueryPlan(input || "认知失调");
+  $("#fromYear").value = 1950;
+  const opts = readOpts();
+  STATE.plan = plan; STATE.opts = opts; STATE.demo = true;
+  STATE.dirFilter = null; STATE.sort = "relevance";
+  const res = demoResult();
+  STATE.works = res.works;
+  STATE.total = res.total;
+  STATE.classics = res.works.slice().sort((a, b) => (b.cites || 0) - (a.cites || 0));
+  STATE.analysis = analyze(STATE.works, plan, opts);
+  $("#q").value = plan.input;
+  try { history.replaceState(null, "", "?demo=1&q=" + encodeURIComponent(plan.input)); } catch (e) {}
+  renderAll();
+  statusHTML("", '<b>演示模式</b>：当前展示内置示例数据（' + res.works.length + ' 篇，主题为“认知失调”），用于在没有网络时体验完整流程。'
+    + '联网后直接点“检索文献”，会自动切换到真实文献数据库（OpenAlex / Crossref）。');
+  connBadge("", "演示模式（离线）");
+  switchTab("overview");
+}
+
+async function runQuery(text) {
+  const input = String(text || "").trim();
+  if (!input) { $("#q").focus(); return; }
+  if (/^\s*$/.test(input)) return;
+  const opts = readOpts();
+  const plan = buildQueryPlan(input);
+  STATE.plan = plan; STATE.opts = opts; STATE.dirFilter = null; STATE.sort = "relevance";
+  $("#q").value = input;
+  pushHist(input);
+  $("#goBtn").disabled = true; $("#goBtn").textContent = "检索中…";
+  switchTab("overview");
+  $("#panel-overview").innerHTML = '<div class="card empty"><span class="loader"><i></i><i></i><i></i></span> 正在检索文献，请稍候（首次检索约 2–8 秒）…</div>'
+    + '<div class="note">正在把「' + esc(input) + '」转成检索式：<b>' + esc(plan.primary) + '</b></div>';
+  setLoading("正在连接文献数据库…");
+
+  const t0 = Date.now();
+  let res = null, classics = [], err = null;
+  try {
+    res = await runSearch(plan, opts, opts.minCite, setLoading);
+    if (res.works.length) {
+      setLoading("正在获取高被引经典文献…");
+      classics = await runClassics(plan, opts);
+    }
+  } catch (e) {
+    err = e;
+  }
+
+  if (!res || (!res.works.length && err)) {
+    res = demoResult();
+    classics = res.works.slice().sort((a, b) => (b.cites || 0) - (a.cites || 0)).slice(0, 10);
+    STATE.demo = true;
+    statusHTML("", '<b>没有连接到文献数据库，已切换到离线示例数据。</b><br>'
+      + '可能原因：当前设备无网络、网络被限制，或数据源临时不可用。'
+      + '下面是内置的示例数据（认知失调主题，共 ' + res.works.length + ' 篇），用来演示完整流程；'
+      + '恢复联网后重新检索，就会自动使用真实数据库。<br><span class="muted small">技术信息：' + esc(err && err.message || "请求失败") + '</span>');
+  } else if (!res.works.length) {
+    const sug = suggestTerms(plan.input);
+    $("#panel-overview").innerHTML = '<div class="card empty"><div class="big">🔍</div>'
+      + '<div style="font-weight:600;color:var(--ink);margin-bottom:6px">没有匹配到文献</div>'
+      + '<div class="small">检索式「' + esc(plan.primary) + '」过于具体或拼写不常见。试试放宽年份、调低被引门槛，或换成下面更常用的术语：</div>'
+      + '<div class="kw" style="justify-content:center;margin-top:12px">'
+      + (sug.length ? sug.map(s => '<button type="button" class="chip" data-search="' + esc(s.zh) + '">' + esc(s.zh) + '<span class="muted"> → ' + esc(s.en) + '</span></button>').join("") : '<span class="muted">请换一个更通用的专业名词</span>')
+      + '</div></div>';
+    statusHTML("err", "检索完成，但没有命中文献。建议更换术语或放宽条件。");
+    connBadge("", "无结果");
+    $("#goBtn").disabled = false; $("#goBtn").textContent = "检索文献";
+    return;
+  } else {
+    STATE.demo = false;
+    const secs = ((Date.now() - t0) / 1000).toFixed(1);
+    const A0 = analyze(res.works, plan, opts);
+    const draft = A0.gaps && A0.gaps.length > 0;
+    statusHTML("ok", '<b>检索完成</b>（用时 ' + secs + ' 秒）：数据库命中约 ' + prettyNum(res.total)
+      + ' 条相关记录，纳入分析 <b>' + res.works.length + '</b> 篇，识别出 <b>' + (A0.dirs ? A0.dirs.length : 0) + '</b> 个研究方向'
+      + (draft ? '、<b>' + A0.gaps.length + '</b> 个空白点与 <b>' + A0.questions.length + '</b> 个可做的研究问题' : '')
+      + '。数据源：' + (opts.source === "crossref" ? "Crossref" : "OpenAlex") + '。');
+    connBadge("ok", "已连接数据库");
+  }
+
+  if (!classics.length && !STATE.demo) {
+    classics = STATE.works && STATE.works.length ? [] : [];
+  }
+  STATE.works = res.works;
+  STATE.total = res.total;
+  STATE.classics = classics.length ? classics : res.works.slice().sort((a, b) => (b.cites || 0) - (a.cites || 0)).slice(0, 10);
+  STATE.analysis = analyze(STATE.works, plan, opts);
+  renderAll();
+  try { history.replaceState(null, "", "?q=" + encodeURIComponent(input)); } catch (e) {}
+  $("#goBtn").disabled = false; $("#goBtn").textContent = "检索文献";
+  if (!STATE.demo) connBadge("ok", "已连接数据库");
+}
+
+/* ---------- 事件绑定 ---------- */
+function bind() {
+  $("#searchForm").addEventListener("submit", e => { e.preventDefault(); runQuery($("#q").value); });
+  $("#clearBtn").addEventListener("click", () => {
+    $("#fromYear").value = 1990; $("#toYear").value = nowYear;
+    $("#minCite").value = 0; $("#onlyOA").checked = false; $("#onlyReview").checked = false;
+    $("#source").value = "openalex";
+  });
+  $("#tabs").addEventListener("click", e => {
+    const b = e.target.closest(".tab");
+    if (b) switchTab(b.dataset.tab);
+  });
+
+  document.addEventListener("click", e => {
+    const t = e.target;
+    if (t.closest("[data-close-modal]") && !t.closest("[data-stop]")) { closeModal(); return; }
+    if (t.matches("[data-close-modal]") && t.classList.contains("close")) { closeModal(); return; }
+
+    const s = t.closest("[data-search]");
+    if (s) { closeModal(); runQuery(s.dataset.search); return; }
+
+    const g = t.closest("[data-goto]");
+    if (g) { switchTab(g.dataset.goto); return; }
+
+    const dn = t.closest("[data-dir]");
+    if (dn) {
+      STATE.dirFilter = dn.dataset.dir || null;
+      renderWorks();
+      if (dn.closest("#panel-directions") || dn.dataset.jump) switchTab("works");
+      return;
+    }
+
+    const f = t.closest("[data-fav]");
+    if (f) {
+      const w = findWork(f.dataset.fav);
+      if (w) { const on = toggleFav(w); f.textContent = on ? "已收藏" : "收藏"; f.classList.toggle("on", on); renderSaved(); }
+      return;
+    }
+    const fd = t.closest("[data-fav-detail]");
+    if (fd) {
+      const all = STATE.works.concat(STATE.classics);
+      const w = all.find(x => favKey(x) === fd.dataset.favDetail) || loadFav().find(x => favKey(x) === fd.dataset.favDetail);
+      if (w) { const on = toggleFav(w); fd.textContent = on ? "取消收藏" : "加入收藏"; renderSaved(); }
+      return;
+    }
+    const d = t.closest("[data-detail]");
+    if (d) { openDetail(findWork(d.dataset.detail)); return; }
+
+    const ex = t.closest("[data-expand]");
+    if (ex) {
+      const ab = ex.closest(".work").querySelector(".ab");
+      ab.classList.toggle("clamp");
+      ex.textContent = ab.classList.contains("clamp") ? "展开摘要" : "收起摘要";
+      return;
+    }
+    const cf = t.closest("[data-clearfav]");
+    if (cf) { if (confirm("确定清空全部收藏吗？")) { saveFav([]); renderSaved(); } return; }
+    const dm = t.closest("[data-demo]");
+    if (dm) { loadDemo("认知失调"); return; }
+
+    const cp = t.closest("[data-copy]");
+    if (cp) {
+      const url = location.href;
+      const done = () => statusHTML("ok", '<b>链接已复制。</b>发给同学或粘贴到浏览器，就能打开同一次检索结果：<br><span class="small">' + esc(url) + '</span>');
+      const fallback = () => {
+        try {
+          const ta = document.createElement("textarea");
+          ta.value = url; ta.style.position = "fixed"; ta.style.opacity = "0";
+          document.body.appendChild(ta); ta.select();
+          document.execCommand("copy"); ta.remove();
+          done();
+        } catch (e) { statusHTML("err", "这个浏览器不允许自动复制，请手动复制地址栏中的链接：" + esc(url)); }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done).catch(fallback);
+      else fallback();
+      return;
+    }
+
+    const x = t.closest("[data-export]");
+    if (x) {
+      const kind = x.dataset.export;
+      const inSaved = x.closest("#panel-saved");
+      const list = inSaved ? loadFav() : (x.closest("#panel-classics") ? STATE.classics : visibleWorks());
+      const tag = inSaved ? "收藏" : (x.closest("#panel-classics") ? "经典" : "检索结果");
+      if (!list.length) { alert("没有可导出的文献。"); return; }
+      if (kind === "csv") exportCSV(list, tag);
+      else if (kind === "bib") exportBib(list, tag);
+      else if (kind === "ris") exportRIS(list, tag);
+      else exportMD(list, tag);
+      return;
+    }
+  });
+
+  document.addEventListener("change", e => {
+    if (e.target.id === "sortSel") { STATE.sort = e.target.value; renderWorks(); }
+  });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+}
+
+function boot() {
+  const ex = $("#examples");
+  ex.innerHTML = '<span class="lab">示例：</span>' + EXAMPLES.map(x =>
+    '<button type="button" class="chip" data-search="' + esc(x) + '">' + esc(x) + '</button>').join("");
+  bind();
+  $("#toYear").value = nowYear;
+  renderSaved();
+  welcome();
+  $("#foot").innerHTML = '心理学文献探索器 · 单文件本地程序，数据来自公开文献数据库 <b>OpenAlex</b>（2.5 亿+ 学术记录）与 <b>Crossref</b>。<br>'
+    + '术语库收录约 ' + GLOSSARY.length + ' 个心理学中英词条；研究方向归类、研究空白挖掘与选题建议由文献计量和摘要文本分析自动生成，仅供选题参考，请以原文为准。<br>'
+    + '所有收藏保存在你自己的浏览器本地，不会上传到任何服务器。'
+    + '<br><button type="button" class="lnk" data-demo="1" style="margin-top:8px">没有网络？点这里进入演示模式</button>';
+  // 支持分享链接：?q=检索词 直接出结果；?demo=1 进入离线演示
+  let params = null;
+  try { params = new URLSearchParams(location.search); } catch (e) { params = null; }
+  const q0 = params && params.get("q");
+  if (params && params.get("demo") === "1") loadDemo(q0 && q0.trim() ? q0 : "认知失调");
+  else if (q0 && q0.trim()) { $("#q").value = q0; runQuery(q0); }
+}
+document.addEventListener("DOMContentLoaded", boot);
+if (document.readyState === "interactive" || document.readyState === "complete") boot();
+</script>
+</body>
+</html>
